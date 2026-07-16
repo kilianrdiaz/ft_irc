@@ -8,7 +8,7 @@ int main(void)
         signal(SIGQUIT, Server::signalHandler);
         ser.serverInit();
     }
-    catch()
+    catch(const std::exception& e)
     {
         ser.closeFds();
         std::cerr << e.what() << std::endl;
