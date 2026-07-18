@@ -86,41 +86,59 @@ void Server::sendToClient(Client &client, const std::string &msg)
         std::cout << "Client <" << client.getFd() << "> partial send (" << sent << "/" << fullMsg.size() << " bytes)" << std::endl;
 }
 
+// Helper para mensajes de error completos
 void Server::sendReply(Client &client, const std::string &code, const std::string &message)
 {
     std::string nick = client.getNickname().empty() ? "*" : client.getNickname();
     sendToClient(client, ":ircserv " + code + " " + nick + " " + message);
 }
 
-void Server::cmdPass(Client &client, const Command &command)
+// Intenta registrar al usuario si todas las condiciones se cumplen
+void Server::tryRegister(Client &client)
 {
     if (client.getRegistered())
+        return;
+
+    if (client.getPassOk() && !client.getNickname().empty() && !client.getUsername().empty())
+    {
+        client.setRegistered(true);
+        sendReply(client, "001", ":Welcome to the IRC server, " + client.getNickname());
+    }
+}
+
+// Verificacion de contraseña del servidor para cada usuario
+void Server::cmdPass(Client &client, const Command &command)
+{
+    if (client.getRegistered()) // Cliente ya registrado
     {
         sendReply(client, "462",  ":You may not reregister");
         return;
     }
 
-    if (command.params.empty())
+    if (command.params.empty()) // Sin argumentos
     {
         sendReply(client, "461", "PASS :Not enough parameters");
         return;
     }
 
-    if (command.params[0] != this->password)
+    if (command.params[0] != this->password) // Contraseña errónea
     {
         sendReply(client, "464", ":Password incorrect");
         return;
     }
 
     client.setPassOk(true);
+    tryRegister(client); //Checkea si estan todas las condiciones válidas para que el cliente se pueda registrar
 }
 
+// Next TODO (Registro)
 void Server::cmdNick(Client &client, const Command &command)
 {
     (void)command;
     std::cout << "Client <" << client.getFd() << "> NICK (not implemented yet)" << std::endl;
 }
 
+// Next TODO (Registro)
 void Server::cmdUser(Client &client, const Command &command)
 {
     (void)command;

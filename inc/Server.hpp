@@ -25,6 +25,7 @@ class Server
 
         void sendToClient(Client &client, const std::string &message);
         void sendReply(Client &client, const std::string &code, const std::string &message);
+        void tryRegister(Client &client);
 
         void cmdPass(Client &client, const Command &command);
         void cmdNick(Client &client, const Command &command);
