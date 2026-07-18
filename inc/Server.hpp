@@ -1,18 +1,45 @@
+#pragma once
+
 #include <iostream>
 #include <vector>
+#include <map>
+#include <string>
+#include <poll.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include "Client.hpp"
+#include "Command.hpp"
 
 class Server
 {
     private:
         int port;
+        std::string password;
         int serSocketFd;
-        static bool signal;
+        static bool sig;
         std::map<int, Client*> clients;
         std::vector<struct pollfd> fds;
+
+        Command parseLine(const std::string &line);
+        void handleCommand(Client &client, const Command &command);
+
+        void sendToClient(Client &client, const std::string &message);
+        void sendReply(Client &client, const std::string &code, const std::string &message);
+
+        void cmdPass(Client &client, const Command &command);
+        void cmdNick(Client &client, const Command &command);
+        void cmdUser(Client &client, const Command &command);
+        void cmdJoin(Client &client, const Command &command);
+        void cmdPrivmsg(Client &client, const Command &command);
+        void cmdKick(Client &client, const Command &command);
+        void cmdInvite(Client &client, const Command &command);
+        void cmdTopic(Client &client, const Command &command);
+        void cmdMode(Client &client, const Command &command);
+        void cmdPart(Client &client, const Command &command);
+        void cmdQuit(Client &client, const Command &command);
+
     public:
-        Server() {serSockerFd = -1;};
+        Server(int port, std::string password);
 
         void serverInit();
         void serSocket();
@@ -23,4 +50,4 @@ class Server
 
         void closeFds();
         void clearClient(int fd);
-}
+};
