@@ -50,6 +50,15 @@ void Server::handleCommand(Client &client, const Command &command)
     if (command.name.empty())
         return;
 
+    bool allowedBfRegister = (command.name == "PASS" || command.name == "NICK" 
+                                || command.name == "USER" || command.name == "QUIT");
+    
+    if (!client.getRegistered() && !allowedBfRegister)
+    {
+        sendReply(client, "451", ":You have not registered");
+        return;
+    }
+
     if (command.name == "PASS")
         cmdPass(client, command);
     else if (command.name == "NICK")
@@ -107,7 +116,8 @@ void Server::tryRegister(Client &client)
     if (client.getPassOk() && !client.getNickname().empty() && !client.getUsername().empty())
     {
         client.setRegistered(true);
-        sendReply(client, "001", ":Welcome to the IRC server, " + client.getNickname());
+        std::string userHost = client.getNickname() + "!" + client.getUsername() + "@" + client.getIpAdd();
+        sendReply(client, "001", ":Welcome to the Internet Relay Network " + userHost);
     }
 }
 
@@ -133,21 +143,75 @@ void Server::cmdPass(Client &client, const Command &command)
     }
 
     client.setPassOk(true);
-    tryRegister(client); //Checkea si estan todas las condiciones válidas para que el cliente se pueda registrar
 }
 
-// Next TODO (Registro)
+// Encontrar si el nickname ya está siendo usado
+bool Server::nicknameInUse(std::string nickname)
+{
+    std::map<int, Client*>::iterator it = clients.begin();
+
+    while (it != clients.end())
+    {
+        if (it->second->getNickname() == nickname)
+            return true;
+        it++;
+    }
+    return false;
+}
+
 void Server::cmdNick(Client &client, const Command &command)
 {
-    (void)command;
-    std::cout << "Client <" << client.getFd() << "> NICK (not implemented yet)" << std::endl;
+    if (!client.getPassOk())
+    {
+        sendReply(client, "464", ":Password required");
+        return;
+    }
+
+    if (command.params.empty() || command.params[0].empty())
+    {
+        sendReply(client, "431", ":No nickname given");
+        return;
+    }
+
+    std::string newNick = command.params[0];
+
+    if (nicknameInUse(newNick))
+    {
+        sendReply(client, "433", newNick + " :Nickname is already in use");
+        return;
+    }
+
+    client.setNickname(newNick);
+    tryRegister(client); //Checkea si estan todas las condiciones válidas para que el cliente se pueda registrar
+    /* Falta añadir confirmación de cambio de nick */
 }
 
 // Next TODO (Registro)
 void Server::cmdUser(Client &client, const Command &command)
 {
-    (void)command;
-    std::cout << "Client <" << client.getFd() << "> USER (not implemented yet)" << std::endl;            
+    if (client.getRegistered())
+    {
+        sendReply(client, "462", ":You may not reregister");
+        return;
+    }
+
+    if (!client.getPassOk())
+    {
+        sendReply(client, "464", ":Password required");
+        return;
+    }          
+
+    if (command.params.size() != 4)
+    {
+        sendReply(client, "461", "USER :Not enough parameters");
+        return;
+    }
+
+    // Solo se guard el Username y el Fullname, guardamos tambien hostname y servername ???
+    client.setUsername(command.params[0]);
+    client.setFullname(command.params[3]);
+
+    tryRegister(client);
 }
 
 void Server::cmdJoin(Client &client, const Command &command)
