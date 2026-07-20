@@ -38,6 +38,8 @@ class Server
         void cmdMode(Client &client, const Command &command);
         void cmdPart(Client &client, const Command &command);
         void cmdQuit(Client &client, const Command &command);
+        void cmdPing(Client &client, const Command &command);
+        void cmdCap(Client &client, const Command &command);
 
         bool nicknameInUse(std::string nickname);
 

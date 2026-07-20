@@ -51,7 +51,8 @@ void Server::handleCommand(Client &client, const Command &command)
         return;
 
     bool allowedBfRegister = (command.name == "PASS" || command.name == "NICK" 
-                                || command.name == "USER" || command.name == "QUIT");
+                                || command.name == "USER" || command.name == "QUIT"
+                                || command.name == "PING" || command.name == "CAP");
     
     if (!client.getRegistered() && !allowedBfRegister)
     {
@@ -81,6 +82,10 @@ void Server::handleCommand(Client &client, const Command &command)
         cmdPart(client, command);
     else if (command.name == "QUIT")
         cmdQuit(client, command);
+    else if (command.name == "PING")
+        cmdPing(client, command);
+    else if (command.name == "CAP")
+        cmdCap(client, command);
     else
         std::cout << "Client <" << client.getFd() << "> Unknown command: " << command.name << std::endl;
 }
@@ -260,4 +265,23 @@ void Server::cmdQuit(Client &client, const Command &command)
 {
     (void)command;
     std::cout << "Client <" << client.getFd() << "> QUIT (not implemented yet)" << std::endl;    
+}
+
+void Server::cmdPing(Client &client, const Command &command)
+{
+    if (command.params.empty())
+    {
+        sendReply(client, "409", ":No origin specified");
+        return;
+    }
+
+    sendToClient(client, "PONG ircserv :" + command.params[0]);
+}
+
+void Server::cmdCap(Client &client, const Command &command)
+{
+    if (!command.params.empty() && command.params[0] == "END")
+        return;
+    
+    sendToClient(client, "CAP * LS :");
 }
