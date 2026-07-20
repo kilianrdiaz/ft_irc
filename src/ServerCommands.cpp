@@ -58,7 +58,7 @@ void Server::handleCommand(Client &client, const Command &command)
     {
         sendReply(client, "451", ":You have not registered");
         return;
-    }
+    } 
 
     if (command.name == "PASS")
         cmdPass(client, command);
@@ -282,6 +282,6 @@ void Server::cmdCap(Client &client, const Command &command)
 {
     if (!command.params.empty() && command.params[0] == "END")
         return;
-    
+
     sendToClient(client, "CAP * LS :");
 }
