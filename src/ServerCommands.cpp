@@ -1,4 +1,5 @@
 #include <sstream>
+#include <sys/socket.h>
 #include "Server.hpp"
 
 Command Server::parseLine(const std::string &line)
@@ -40,6 +41,8 @@ Command Server::parseLine(const std::string &line)
         while (pos < rest.size() && rest[pos] == ' ') // se salta espacios consecutivos
             pos++;
     }
+
+    return command;
 }
 
 void Server::handleCommand(Client &client, const Command &command)
@@ -70,13 +73,15 @@ void Server::handleCommand(Client &client, const Command &command)
     else if (command.name == "QUIT")
         cmdQuit(client, command);
     else
-        std::cout << "Client <" << client.getFd << "> Unknown command: " << command.name << std::endl;
+        std::cout << "Client <" << client.getFd() << "> Unknown command: " << command.name << std::endl;
 }
 
 void Server::sendToClient(Client &client, const std::string &msg)
 {
+    ssize_t sent;
+
     std::string fullMsg = msg + "\r\n";
-    send(client.getFd(), fullMsg.c_str(), fullMsg.size(), 0);
+    sent = send(client.getFd(), fullMsg.c_str(), fullMsg.size(), 0);
 
     // TODO : Puede que los mensajes no se envien completos, esto es solo un aviso,
     // puede que haya que implemenar una solución para los bytes que falten por mandar
