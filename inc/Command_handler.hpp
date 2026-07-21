@@ -301,20 +301,20 @@ class PartChannelCommandHandler : public AbstractCommandHandler
  * ========================================================================== *
  */
 
-// class TopicCommandHandler : public AbstractCommandHandler
-// {
-//     public:
-//         TopicCommandHandler(
-//             Server &server,
-//             Client &client
-//         );
+class TopicCommandHandler : public AbstractCommandHandler
+{
+    public:
+        TopicCommandHandler(
+            Server &server,
+            Client &client
+        );
 
-//         virtual ~TopicCommandHandler();
+        virtual ~TopicCommandHandler();
 
-//         virtual void execute(
-//             const std::vector<std::string> &params
-//         );
-// };
+        virtual void execute(
+            const std::vector<std::string> &params
+        );
+};
 
 
 /*

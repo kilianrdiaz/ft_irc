@@ -146,14 +146,14 @@ static void handlePart(
 //     handler.execute(params);
 // }
 
-// static void handleTopic(
-//     Server &server,
-//     Client &client,
-//     const std::vector<std::string> &params)
-// {
-//     TopicCommandHandler handler(server, client);
-//     handler.execute(params);
-// }
+static void handleTopic(
+    Server &server,
+    Client &client,
+    const std::vector<std::string> &params)
+{
+    TopicCommandHandler handler(server, client);
+    handler.execute(params);
+}
 
 // static void handleMode(
 //     Server &server,
@@ -180,7 +180,7 @@ static std::map<std::string, HandlerExecutor> &getCommands()
         commands["JOIN"] = &handleJoin;
         commands["PART"] = &handlePart;
         // commands["KICK"] = &handleKick;
-        // commands["TOPIC"] = &handleTopic;
+        commands["TOPIC"] = &handleTopic;
         // commands["MODE"] = &handleMode;
     }
 
