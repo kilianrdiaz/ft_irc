@@ -279,20 +279,20 @@ class PartChannelCommandHandler : public AbstractCommandHandler
  * ========================================================================== *
  */
 
-// class KickChannelCommandHandler : public AbstractCommandHandler
-// {
-//     public:
-//         KickChannelCommandHandler(
-//             Server &server,
-//             Client &client
-//         );
+class KickChannelCommandHandler : public AbstractCommandHandler
+{
+    public:
+        KickChannelCommandHandler(
+            Server &server,
+            Client &client
+        );
 
-//         virtual ~KickChannelCommandHandler();
+        virtual ~KickChannelCommandHandler();
 
-//         virtual void execute(
-//             const std::vector<std::string> &params
-//         );
-// };
+        virtual void execute(
+            const std::vector<std::string> &params
+        );
+};
 
 
 /*
