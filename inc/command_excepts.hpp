@@ -192,6 +192,32 @@ class NotInChannelException : public ChannelException
         );
 };
 
+class InviteOnlyChannelException : public ChannelException
+{
+    public:
+        InviteOnlyChannelException(
+            const std::string &nickname,
+            const std::string &channel
+        );
+};
+
+class BadChannelKeyException : public ChannelException
+{
+    public:
+        BadChannelKeyException(
+            const std::string &nickname,
+            const std::string &channel
+        );
+};
+
+class ChannelFullException : public ChannelException
+{
+    public:
+        ChannelFullException(
+            const std::string &nickname,
+            const std::string &channel
+        );
+};
 
 /*
  * MODE exceptions

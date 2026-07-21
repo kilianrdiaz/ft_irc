@@ -186,6 +186,29 @@ NotInChannelException::NotInChannelException(
 {
 }
 
+InviteOnlyChannelException::InviteOnlyChannelException(
+    const std::string &nickname,
+    const std::string &channel)
+    : ChannelException(
+        ERR_INVITEONLYCHAN(nickname, channel))
+{
+}
+
+BadChannelKeyException::BadChannelKeyException(
+    const std::string &nickname,
+    const std::string &channel)
+    : ChannelException(
+        ERR_BADCHANNELKEY(nickname, channel))
+{
+}
+
+ChannelFullException::ChannelFullException(
+    const std::string &nickname,
+    const std::string &channel)
+    : ChannelException(
+        ERR_CHANNELISFULL(nickname, channel))
+{
+}
 
 /*
 ** ============================================================================

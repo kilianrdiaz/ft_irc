@@ -231,47 +231,24 @@ class PingCommandHandler : public AbstractCommandHandler
 
 /*
  * ========================================================================== *
- * CHANNEL
- * ========================================================================== *
- */
-
-// class ChannelCommandHandler : public AbstractCommandHandler
-// {
-//     protected:
-//         ChannelCommandHandler(
-//             Server &server,
-//             Client &client
-//         );
-
-//     public:
-//         virtual ~ChannelCommandHandler();
-
-//         virtual void execute(
-//             const std::vector<std::string> &params
-//         ) = 0;
-// };
-
-
-/*
- * ========================================================================== *
  * JOIN
  * ========================================================================== *
  */
 
-// class JoinChannelCommandHandler : public ChannelCommandHandler
-// {
-//     public:
-//         JoinChannelCommandHandler(
-//             Server &server,
-//             Client &client
-//         );
+class JoinChannelCommandHandler : public AbstractCommandHandler
+{
+    public:
+        JoinChannelCommandHandler(
+            Server &server,
+            Client &client
+        );
 
-//         virtual ~JoinChannelCommandHandler();
+        virtual ~JoinChannelCommandHandler();
 
-//         virtual void execute(
-//             const std::vector<std::string> &params
-//         );
-// };
+        virtual void execute(
+            const std::vector<std::string> &params
+        );
+};
 
 
 /*
@@ -280,7 +257,7 @@ class PingCommandHandler : public AbstractCommandHandler
  * ========================================================================== *
  */
 
-// class PartChannelCommandHandler : public ChannelCommandHandler
+// class PartChannelCommandHandler : public AbstractCommandHandler
 // {
 //     public:
 //         PartChannelCommandHandler(
@@ -302,7 +279,7 @@ class PingCommandHandler : public AbstractCommandHandler
  * ========================================================================== *
  */
 
-// class KickChannelCommandHandler : public ChannelCommandHandler
+// class KickChannelCommandHandler : public AbstractCommandHandler
 // {
 //     public:
 //         KickChannelCommandHandler(
