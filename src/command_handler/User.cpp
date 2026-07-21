@@ -26,6 +26,9 @@ void UserCommandHandler::execute(const std::vector<std::string> &params)
 {
     if (!_client.getPassOk())
         throw NotRegisteredException(_client.getNickname());
+    
+    if (_client.getRegistered())
+        throw AlreadyRegisteredException(_client.getNickname());
 
     if (params.size() != 4)
         throw InvalidParametersException(_client.getNickname(), "USER");
@@ -40,5 +43,5 @@ void UserCommandHandler::execute(const std::vector<std::string> &params)
     _client.setUsername(username);
     _client.setRealname(params[3]);
     _client.setRegistered(true);
-    // _client.reply(RPL_WELCOME(_client.getNickname()));
+    _client.tryRegister();
 }

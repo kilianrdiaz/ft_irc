@@ -23,8 +23,11 @@ NickCommandHandler::~NickCommandHandler()
 
 void NickCommandHandler::execute(const std::vector<std::string> &params)
 {
-    if (!_client.getRegistered())
+    if (!_client.getPassOk())
         throw NotRegisteredException(_client.getNickname());
+    if (_client.getRegistered())
+        throw AlreadyRegisteredException(_client.getNickname());
+
     if (params.size() != 1)
         throw InvalidParametersException(_client.getNickname(), "NICK");
 
@@ -33,5 +36,5 @@ void NickCommandHandler::execute(const std::vector<std::string> &params)
         throw InvalidNicknameException(_client.getNickname());
 
     _client.setNickname(nickname);
-    _client.reply(RPL_WELCOME(_client.getNickname()));
+    _client.tryRegister();
 }

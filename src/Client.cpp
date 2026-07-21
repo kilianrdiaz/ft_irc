@@ -12,9 +12,10 @@
 
 #include "Client.hpp"
 #include <sys/socket.h>
+#include "response.hpp"
 
-Client::Client() : _fd(-1), _passOk(false), _registered(false) {}
-Client::Client(int socket_fd) : _fd(socket_fd), _passOk(false), _registered(false) {}
+Client::Client() : _fd(-1), _nickname("*"), _passOk(false), _registered(false) {}
+Client::Client(int socket_fd) : _fd(socket_fd), _nickname("*"), _passOk(false), _registered(false) {}
 Client::Client(const Client &other) : _fd(other._fd), _hostname(other._hostname), _recvBuffer(other._recvBuffer), _nickname(other._nickname), _username(other._username), _passOk(other._passOk), _registered(other._registered) {}
 Client::~Client() {}
 
@@ -51,13 +52,21 @@ void Client::setPassOk(bool value) { _passOk = value; }
 void Client::setRegistered(bool value) { _registered = value; }
 void Client::setRealname(std::string newRealname) { _realname = newRealname; }
 
-
 std::string     Client::get_prefix() const 
 {
     std::string username = _username.empty() ? "" : "!" + _username;
     std::string hostname = _hostname.empty() ? "" : "@" + _hostname;
 
     return _nickname + username + hostname;
+}
+
+void Client::tryRegister()
+{
+    if (this->getPassOk() && !this->getNickname().empty() && !this->getUsername().empty())
+    {
+        this->setRegistered(true);
+        this->reply(RPL_WELCOME(this->getNickname()));
+    }
 }
 
 void Client::write(const std::string &message)

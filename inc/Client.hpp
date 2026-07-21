@@ -14,6 +14,7 @@ class Client
         std::string _realname;
         bool _passOk;
         bool _registered;
+        std::string get_prefix() const;
 
     public:
         Client();
@@ -31,7 +32,7 @@ class Client
         bool getPassOk();
         bool getRegistered();
 
-        std::string get_prefix() const;
+        void tryRegister();
 
         void setFd(int newFd);
         void setHostName(std::string hostname);
@@ -42,4 +43,4 @@ class Client
         void setRegistered(bool value);
         void write (const std::string &message);
         void reply(const std::string &reply);
-};
+    };
