@@ -23,9 +23,6 @@ CapCommandHandler::~CapCommandHandler()
 
 void CapCommandHandler::execute(const std::vector<std::string> &params)
 {
-    if (!_client.getPassOk())
-        throw NotRegisteredException(_client.getNickname());
-
     if (params.size() < 1)
         throw InvalidParametersException(_client.getNickname(), "CAP");
 
