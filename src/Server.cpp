@@ -175,6 +175,14 @@ void Server::closeFds()
         it++;
     }
 
+    std::map<std::string, Channel*>::iterator cit = channels.begin();
+
+    while (cit != channels.end())
+    {
+        delete cit->second;
+        cit++;
+    }
+
     if (serSocketFd != -1)
     {
         std::cout << "Server <" << serSocketFd << "> Disconnected" << std::endl;

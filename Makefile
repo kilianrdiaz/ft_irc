@@ -13,7 +13,8 @@ SRCS = main.cpp \
        command_handler/User.cpp \
        command_handler/Nick.cpp \
        command_handler/Cap.cpp \
-       command_handler/Ping.cpp
+       command_handler/Ping.cpp \
+       Channel.cpp
 
 OBJS = $(SRCS:%.cpp=$(OBJS_DIR)/%.o)
 DEPS = $(OBJS:.o=.d)
