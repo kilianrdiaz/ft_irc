@@ -15,19 +15,25 @@ class Client
         bool registered;
 
     public:
-        Client() : fd(-1), passOk(false), registered(false) {};
+        Client();
+        Client(int socket_fd);
+        Client(const Client &other);
+        ~Client();
+        Client &operator=(const Client &other);
 
-        int getFd() {return fd;};
-        std::string &getBuffer() {return recvBuffer;};
-        std::string getNickname() {return nickname;};
-        std::string getUsername() {return username;};
-        bool getPassOk() {return passOk;};
-        bool getRegistered() {return registered;};
+        int getFd();
+        std::string &getBuffer();
+        std::string getNickname();
+        std::string getUsername();
+        bool getPassOk();
+        bool getRegistered();
 
-        void setFd(int newFd) {fd = newFd;};
-        void setIpAdd(std::string newAddress) {address = newAddress;};
-        void setNickname(std::string newNick) {nickname = newNick;};
-        void setUsername(std::string newUser) {username = newUser;};
-        void setPassOk(bool value) {passOk = value;};
-        void setRegistered(bool value) {registered = value;};
+        void setFd(int newFd);
+        void setIpAdd(std::string newAddress);
+        void setNickname(std::string newNick);
+        void setUsername(std::string newUser);
+        void setPassOk(bool value);
+        void setRegistered(bool value);
+        void write (const std::string &message);
+        void reply(const std::string &code, const std::string &message);
 };

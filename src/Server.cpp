@@ -8,6 +8,7 @@
 #include <csignal>         //-> for signal()
 #include <cstring>         //-> for memset()
 #include "Server.hpp"
+#include "Command_handler.hpp"
 
 bool Server::sig = false;
 
@@ -150,8 +151,14 @@ void Server::receiveNewData(int fd)
         if (line.empty()) // ignora líneas vacías (p.ej. \r\n\r\n)
             continue;
 
-        Command command = parseLine(line);
-        handleCommand(*client, command);
+        Command command = AbstractCommandHandler::parseLine(line);
+        try {
+            AbstractCommandHandler::executeCommand(*this, *client, command.name, command.params);
+        }
+        catch (const CommandException &e)
+        {
+            client->write(e.what());
+        }
     }
 }
 
