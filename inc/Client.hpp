@@ -6,13 +6,14 @@
 class Client
 {
     private:
-        int fd;
-        std::string address;
-        std::string recvBuffer;
-        std::string nickname;
-        std::string username;
-        bool passOk;
-        bool registered;
+        int _fd;
+        std::string _hostname;
+        std::string _recvBuffer;
+        std::string _nickname;
+        std::string _username;
+        std::string _realname;
+        bool _passOk;
+        bool _registered;
 
     public:
         Client();
@@ -21,19 +22,24 @@ class Client
         ~Client();
         Client &operator=(const Client &other);
 
-        int getFd();
+        int getFd() const;
         std::string &getBuffer();
-        std::string getNickname();
-        std::string getUsername();
+        std::string getHost() const;
+        std::string getNickname() const;
+        std::string getUsername() const;
+        std::string getRealname() const;
         bool getPassOk();
         bool getRegistered();
 
+        std::string get_prefix() const;
+
         void setFd(int newFd);
-        void setIpAdd(std::string newAddress);
+        void setHostName(std::string hostname);
         void setNickname(std::string newNick);
         void setUsername(std::string newUser);
+        void setRealname(std::string newRealname);
         void setPassOk(bool value);
         void setRegistered(bool value);
         void write (const std::string &message);
-        void reply(const std::string &code, const std::string &message);
+        void reply(const std::string &reply);
 };
