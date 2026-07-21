@@ -257,20 +257,20 @@ class JoinChannelCommandHandler : public AbstractCommandHandler
  * ========================================================================== *
  */
 
-// class PartChannelCommandHandler : public AbstractCommandHandler
-// {
-//     public:
-//         PartChannelCommandHandler(
-//             Server &server,
-//             Client &client
-//         );
+class PartChannelCommandHandler : public AbstractCommandHandler
+{
+    public:
+        PartChannelCommandHandler(
+            Server &server,
+            Client &client
+        );
 
-//         virtual ~PartChannelCommandHandler();
+        virtual ~PartChannelCommandHandler();
 
-//         virtual void execute(
-//             const std::vector<std::string> &params
-//         );
-// };
+        virtual void execute(
+            const std::vector<std::string> &params
+        );
+};
 
 
 /*

@@ -2,7 +2,8 @@
 
 #include "Channel.hpp"
 
-Channel::Channel(const std::string &name) : name(name), inviteOnly(false), topicRestricted(false), userLimit(0)
+Channel::Channel(const std::string &name, const std::string &key)
+    : name(name), key(key), inviteOnly(false), topicRestricted(false), userLimit(0)
 {
 }
 

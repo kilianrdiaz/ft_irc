@@ -28,7 +28,7 @@ void JoinChannelCommandHandler::execute(const std::vector<std::string> &params)
 
     if (it == channels.end())
     {
-        Channel *newChannel = new Channel(channelName);
+        Channel *newChannel = new Channel(channelName, providedKey);
         newChannel->addMember(&_client, true);
         channels[channelName] = newChannel;
     }

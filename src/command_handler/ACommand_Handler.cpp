@@ -128,14 +128,14 @@ static void handleJoin(
     handler.execute(params);
 }
 
-// static void handlePart(
-//     Server &server,
-//     Client &client,
-//     const std::vector<std::string> &params)
-// {
-//     PartChannelCommandHandler handler(server, client);
-//     handler.execute(params);
-// }
+static void handlePart(
+    Server &server,
+    Client &client,
+    const std::vector<std::string> &params)
+{
+    PartChannelCommandHandler handler(server, client);
+    handler.execute(params);
+}
 
 // static void handleKick(
 //     Server &server,
@@ -178,7 +178,7 @@ static std::map<std::string, HandlerExecutor> &getCommands()
         // commands["QUIT"] = &handleQuit;
         // commands["PRIVMSG"] = &handlePrivmsg;
         commands["JOIN"] = &handleJoin;
-        // commands["PART"] = &handlePart;
+        commands["PART"] = &handlePart;
         // commands["KICK"] = &handleKick;
         // commands["TOPIC"] = &handleTopic;
         // commands["MODE"] = &handleMode;

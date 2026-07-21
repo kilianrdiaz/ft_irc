@@ -26,7 +26,7 @@ class Channel
         std::set<int> invited;
 
     public:
-        Channel(const std::string &name);
+        Channel(const std::string &name, const std::string &key = "");
         Channel(const Channel &other);
         Channel &operator=(const Channel &other);
         ~Channel();
