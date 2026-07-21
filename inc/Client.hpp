@@ -6,31 +6,41 @@
 class Client
 {
     private:
-        int fd;
-        std::string address;
-        std::string recvBuffer;
-        std::string nickname;
-        std::string username;
-        std::string fullname;
-        bool passOk;
-        bool registered;
+        int _fd;
+        std::string _hostname;
+        std::string _recvBuffer;
+        std::string _nickname;
+        std::string _username;
+        std::string _realname;
+        bool _passOk;
+        bool _registered;
+        std::string get_prefix() const;
 
     public:
-        Client() : fd(-1), passOk(false), registered(false) {};
+        Client();
+        Client(int socket_fd);
+        Client(const Client &other);
+        ~Client();
+        Client &operator=(const Client &other);
 
-        int getFd() {return fd;};
-        std::string &getBuffer() {return recvBuffer;};
-        std::string getNickname() {return nickname;};
-        std::string getUsername() {return username;};
-        std::string getIpAdd() {return address;};
-        bool getPassOk() {return passOk;};
-        bool getRegistered() {return registered;};
+        int getFd() const;
+        std::string &getBuffer();
+        std::string getHost() const;
+        std::string getNickname() const;
+        std::string getUsername() const;
+        std::string getRealname() const;
+        bool getPassOk();
+        bool getRegistered();
 
-        void setFd(int newFd) {fd = newFd;};
-        void setIpAdd(std::string newAddress) {address = newAddress;};
-        void setNickname(std::string newNick) {nickname = newNick;};
-        void setUsername(std::string newUser) {username = newUser;};
-        void setFullname(std::string newName) {fullname = newName;};
-        void setPassOk(bool value) {passOk = value;};
-        void setRegistered(bool value) {registered = value;};
-};
+        void tryRegister();
+
+        void setFd(int newFd);
+        void setHostName(std::string hostname);
+        void setNickname(std::string newNick);
+        void setUsername(std::string newUser);
+        void setRealname(std::string newRealname);
+        void setPassOk(bool value);
+        void setRegistered(bool value);
+        void write (const std::string &message);
+        void reply(const std::string &reply);
+    };

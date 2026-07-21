@@ -8,6 +8,7 @@
 #include <csignal>         //-> for signal()
 #include <cstring>         //-> for memset()
 #include "Server.hpp"
+#include "Command_handler.hpp"
 
 bool Server::sig = false;
 
@@ -106,7 +107,7 @@ void Server::acceptNewClient()
     newPoll.revents = 0;
 
     newClient->setFd(clifd); // aplica el fd al cliente
-    newClient->setIpAdd(inet_ntoa(cliAddress.sin_addr)); // convierte la IP a string y la añade
+    newClient->setHostName(inet_ntoa(cliAddress.sin_addr)); // convierte la IP a string y la añade
     clients[clifd] = newClient; // añade al nuevo cliente al map de clientes
     fds.push_back(newPoll); // añade el nuevo socket al pollfd
 
@@ -150,8 +151,15 @@ void Server::receiveNewData(int fd)
         if (line.empty()) // ignora líneas vacías (p.ej. \r\n\r\n)
             continue;
 
-        Command command = parseLine(line);
-        handleCommand(*client, command);
+        Command command = AbstractCommandHandler::parseLine(line);
+        try {
+            AbstractCommandHandler::executeCommand(*this, *client, command.name, command.params);
+        }
+        catch (const CommandException &e)
+        {
+            client->write(e.what());
+            return ;
+        }
     }
 }
 
