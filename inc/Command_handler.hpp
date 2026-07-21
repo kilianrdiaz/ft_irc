@@ -323,19 +323,19 @@ class TopicCommandHandler : public AbstractCommandHandler
  * ========================================================================== *
  */
 
-// class ModeCommandHandler : public AbstractCommandHandler
-// {
-//     public:
-//         ModeCommandHandler(
-//             Server &server,
-//             Client &client
-//         );
+class ModeCommandHandler : public AbstractCommandHandler
+{
+    public:
+        ModeCommandHandler(
+            Server &server,
+            Client &client
+        );
 
-//         virtual ~ModeCommandHandler();
+        virtual ~ModeCommandHandler();
 
-//         virtual void execute(
-//             const std::vector<std::string> &params
-//         );
-// };
+        virtual void execute(
+            const std::vector<std::string> &params
+        );
+};
 
 #endif

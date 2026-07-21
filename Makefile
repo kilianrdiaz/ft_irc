@@ -17,6 +17,7 @@ SRCS = main.cpp \
        command_handler/Join.cpp \
        command_handler/Part.cpp \
        command_handler/Topic.cpp \
+       command_handler/Mode.cpp \
        Channel.cpp
 
 OBJS = $(SRCS:%.cpp=$(OBJS_DIR)/%.o)
