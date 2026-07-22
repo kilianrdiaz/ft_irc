@@ -9,6 +9,7 @@ SRCS = main.cpp \
        Client.cpp \
        command_handler/exceptions.cpp \
        command_handler/ACommand_Handler.cpp \
+       command_handler/AChannelCommandHandler.cpp \
        command_handler/Pass.cpp \
        command_handler/User.cpp \
        command_handler/Nick.cpp \

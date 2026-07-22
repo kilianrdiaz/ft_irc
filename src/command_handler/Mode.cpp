@@ -2,8 +2,9 @@
 #include "Channel.hpp"
 #include "command_excepts.hpp"
 #include "response.hpp"
+#include <cstdlib>
 
-ModeCommandHandler::ModeCommandHandler(Server &server, Client &client) : AbstractCommandHandler(server, client)
+ModeCommandHandler::ModeCommandHandler(Server &server, Client &client) : AChannelCommandHandler(server, client)
 {
 }
 
@@ -22,7 +23,7 @@ static bool parseLimit(const std::string &str, size_t &out)
             return false;
     }
 
-    out = static_cast<size_t>(std::atol(str.c_str()));
+    out = static_cast<size_t>(atol(str.c_str()));
     return true;
 }
 
@@ -140,5 +141,5 @@ void ModeCommandHandler::execute(const std::vector<std::string> &params)
     for (size_t i = 2; i < params.size(); i++)
         argsJoined += (i > 2 ? " " : "") + params[i];
 
-    _client.write(RPL_MODE(_client.getNickname(), channelName, modeString, argsJoined));
+    _client.write(MSG_MODE(_client.getNickname(), channelName, modeString, argsJoined));
 }

@@ -60,15 +60,6 @@ std::string     Client::get_prefix() const
     return _nickname + username + hostname;
 }
 
-void Client::tryRegister()
-{
-    if (this->getPassOk() && !this->getNickname().empty() && !this->getUsername().empty())
-    {
-        this->setRegistered(true);
-        this->reply(RPL_WELCOME(this->getNickname()));
-    }
-}
-
 void Client::write(const std::string &message)
 {
     std::string fullMessage = message + "\r\n";
@@ -77,9 +68,4 @@ void Client::write(const std::string &message)
         std::cerr << "Client <" << _fd << "> send() failed" << std::endl;
     else if (static_cast<size_t>(sent) < fullMessage.size())
         std::cerr << "Client <" << _fd << "> partial send (" << sent << "/" << fullMessage.size() << " bytes)" << std::endl;
-}
-
-void Client::reply(const std::string &reply)
-{
-    this->write(":" + get_prefix() + " " + reply);
 }

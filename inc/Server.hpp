@@ -29,6 +29,9 @@ class Server
         void serSocket();
         void acceptNewClient();
         void receiveNewData(int fd);
+        void replyToClient(int fd, const std::string &message);
+        void tryRegisterClient(Client &client);
+        Client *searchNickname(const std::string &nickname);
         std::string getPassword() const { return password; }
         std::map<int, Client*> &getClients() { return clients; }
         std::map<std::string, Channel*> &getChannels() { return channels; }

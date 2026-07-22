@@ -3,7 +3,7 @@
 #include "command_excepts.hpp"
 #include "response.hpp"
 
-KickChannelCommandHandler::KickChannelCommandHandler(Server &server, Client &client) : AbstractCommandHandler(server, client)
+KickChannelCommandHandler::KickChannelCommandHandler(Server &server, Client &client) : AChannelCommandHandler(server, client)
 {
 }
 
@@ -55,7 +55,7 @@ void KickChannelCommandHandler::execute(const std::vector<std::string> &params)
         throw ChannelException(ERR_USERNOTINCHANNEL(_client.getNickname(), targetNick, channelName));
 
     channel->removeMember(targetFd);
-    _client.write(RPL_KICK(_client.getNickname(), channelName, targetNick, reason));
+    _client.write(MSG_KICK(_client.getNickname(), channelName, targetNick, reason));
 
     if (channel->memberCount() == 0)
     {

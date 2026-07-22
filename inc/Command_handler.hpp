@@ -228,6 +228,36 @@ class PingCommandHandler : public AbstractCommandHandler
 //         );
 // };
 
+/*
+ * ========================================================================== *
+ * CHANNEL
+ * ========================================================================== *
+ */
+
+class AChannelCommandHandler : public AbstractCommandHandler
+{
+    public:
+        AChannelCommandHandler(
+            Server &server,
+            Client &client
+        );
+    protected:
+        std::vector<std::string> parseChannelList(
+            const std::string &channelList
+        );
+
+        Channel *getChannelByName(
+            const std::string &channelName
+        );
+
+    public:
+        virtual ~AChannelCommandHandler();
+
+        virtual void execute(
+            const std::vector<std::string> &params
+        ) = 0;
+};
+
 
 /*
  * ========================================================================== *
@@ -235,7 +265,7 @@ class PingCommandHandler : public AbstractCommandHandler
  * ========================================================================== *
  */
 
-class JoinChannelCommandHandler : public AbstractCommandHandler
+class JoinChannelCommandHandler : public AChannelCommandHandler
 {
     public:
         JoinChannelCommandHandler(
@@ -257,7 +287,7 @@ class JoinChannelCommandHandler : public AbstractCommandHandler
  * ========================================================================== *
  */
 
-class PartChannelCommandHandler : public AbstractCommandHandler
+class PartChannelCommandHandler : public AChannelCommandHandler
 {
     public:
         PartChannelCommandHandler(
@@ -279,7 +309,7 @@ class PartChannelCommandHandler : public AbstractCommandHandler
  * ========================================================================== *
  */
 
-class KickChannelCommandHandler : public AbstractCommandHandler
+class KickChannelCommandHandler : public AChannelCommandHandler
 {
     public:
         KickChannelCommandHandler(
@@ -301,7 +331,7 @@ class KickChannelCommandHandler : public AbstractCommandHandler
  * ========================================================================== *
  */
 
-class TopicCommandHandler : public AbstractCommandHandler
+class TopicCommandHandler : public AChannelCommandHandler
 {
     public:
         TopicCommandHandler(
@@ -323,7 +353,7 @@ class TopicCommandHandler : public AbstractCommandHandler
  * ========================================================================== *
  */
 
-class ModeCommandHandler : public AbstractCommandHandler
+class ModeCommandHandler : public AChannelCommandHandler
 {
     public:
         ModeCommandHandler(

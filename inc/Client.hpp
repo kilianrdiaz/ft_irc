@@ -32,8 +32,6 @@ class Client
         bool getPassOk();
         bool getRegistered();
 
-        void tryRegister();
-
         void setFd(int newFd);
         void setHostName(std::string hostname);
         void setNickname(std::string newNick);
@@ -42,5 +40,4 @@ class Client
         void setPassOk(bool value);
         void setRegistered(bool value);
         void write (const std::string &message);
-        void reply(const std::string &reply);
     };

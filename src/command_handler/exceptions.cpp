@@ -6,13 +6,12 @@
 /*   By: alejhern <alejhern@student.42barcelona.co  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/21 04:17:13 by alejhern          #+#    #+#             */
-/*   Updated: 2026/07/21 04:17:15 by alejhern         ###   ########.fr       */
+/*   Updated: 2026/07/22 13:00:00 by alejhern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "response.hpp"
 #include "command_excepts.hpp"
-#include <map>
 
 /*
 ** ============================================================================
@@ -57,11 +56,17 @@ InvalidParametersException::InvalidParametersException(
 {
 }
 
-
 NotRegisteredException::NotRegisteredException(
     const std::string &nickname)
     : CommandException(
         ERR_NOTREGISTERED(nickname))
+{
+}
+
+AlreadyRegisteredException::AlreadyRegisteredException(
+    const std::string &nickname)
+    : CommandException(
+        ERR_ALREADYREGISTERED(nickname))
 {
 }
 
@@ -88,42 +93,16 @@ InvalidPasswordException::InvalidPasswordException(
 
 /*
 ** ============================================================================
-** USER Exceptions
-** ============================================================================
-*/
-
-InvalidUsernameException::InvalidUsernameException(
-    const std::string &nickname)
-    : CommandException(
-        ERR_NONICKNAMEGIVEN(nickname))
-{
-}
-
-AlreadyRegisteredException::AlreadyRegisteredException(
-    const std::string &nickname)
-    : CommandException(
-        ERR_ALREADYREGISTERED(nickname))
-{
-}
-
-
-/*
-** ============================================================================
 ** NICK Exceptions
 ** ============================================================================
 */
 
-InvalidNicknameException::InvalidNicknameException(
-    const std::string &nickname)
-    : CommandException(
-        ERR_NONICKNAMEGIVEN(nickname))
-{
-}
 
-NicknameInUseException::NicknameInUseException(
-    const std::string &nickname)
+AlreadyExistNicknameException::AlreadyExistNicknameException(
+    const std::string &nickname,
+    const std::string &used_nickname)
     : CommandException(
-        ERR_NICKNAMEINUSE(nickname))
+        ERR_NICKNAMEINUSE(nickname, used_nickname))
 {
 }
 
@@ -174,7 +153,7 @@ AlreadyInChannelException::AlreadyInChannelException(
     const std::string &nickname,
     const std::string &channel)
     : ChannelException(
-        ERR_CANNOTSENDTOCHAN(nickname, channel))
+        ERR_USERONCHANNEL(nickname, nickname, channel))
 {
 }
 
@@ -210,6 +189,7 @@ ChannelFullException::ChannelFullException(
 {
 }
 
+
 /*
 ** ============================================================================
 ** MODE Exceptions
@@ -220,6 +200,6 @@ InvalidModeException::InvalidModeException(
     const std::string &nickname,
     const std::string &mode)
     : CommandException(
-        ERR_NEEDMOREPARAMS(nickname, mode))
+        ERR_UNKNOWNMODE(nickname, mode))
 {
 }

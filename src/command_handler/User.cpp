@@ -34,14 +34,11 @@ void UserCommandHandler::execute(const std::vector<std::string> &params)
         throw InvalidParametersException(_client.getNickname(), "USER");
 
     std::string username = params[0];
-    if (username.empty())
-        throw InvalidUsernameException(_client.getNickname());
 
     if (_client.getRegistered())
         throw AlreadyRegisteredException(_client.getNickname());
 
     _client.setUsername(username);
     _client.setRealname(params[3]);
-    _client.setRegistered(true);
-    _client.tryRegister();
+    _server.tryRegisterClient(_client);
 }

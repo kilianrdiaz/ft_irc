@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "Command_handler.hpp"
+#include "command_excepts.hpp"
 
 PingCommandHandler::PingCommandHandler(Server &server, Client &client) : AbstractCommandHandler(server, client)
 {
@@ -32,5 +33,5 @@ void PingCommandHandler::execute(const std::vector<std::string> &params)
     if (pingMessage.empty())
         throw InvalidPingException(_client.getNickname());
 
-    _client.reply("PONG :" + pingMessage);
+    _client.write("PONG :" + pingMessage);
 }

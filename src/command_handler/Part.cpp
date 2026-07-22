@@ -3,7 +3,7 @@
 #include "command_excepts.hpp"
 #include "response.hpp"
 
-PartChannelCommandHandler::PartChannelCommandHandler(Server &server, Client &client) : AbstractCommandHandler(server, client)
+PartChannelCommandHandler::PartChannelCommandHandler(Server &server, Client &client) : AChannelCommandHandler(server, client)
 {
 }
 
@@ -13,7 +13,7 @@ PartChannelCommandHandler::~PartChannelCommandHandler()
 
 void PartChannelCommandHandler::execute(const std::vector<std::string> &params)
 {
-    if (params.size() != 1)
+    if (params.size() < 1 || params.size() > 2)
         throw InvalidParametersException(_client.getNickname(), "PART");
 
     std::string channelName = params[0];
@@ -30,7 +30,8 @@ void PartChannelCommandHandler::execute(const std::vector<std::string> &params)
         throw NotInChannelException(_client.getNickname(), channelName);
 
     channel->removeMember(_client.getFd());
-    _client.write(RPL_PART(_client.getNickname(), channelName));
+    std::string reason = params.size() > 1 ? params[1] : "";
+    _client.write(MSG_PART(_client.getNickname(), channelName, reason));
 
     if (channel->memberCount() == 0)
     {

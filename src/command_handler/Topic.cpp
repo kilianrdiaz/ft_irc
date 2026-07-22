@@ -3,7 +3,7 @@
 #include "command_excepts.hpp"
 #include "response.hpp"
 
-TopicCommandHandler::TopicCommandHandler(Server &server, Client &client) : AbstractCommandHandler(server, client)
+TopicCommandHandler::TopicCommandHandler(Server &server, Client &client) : AChannelCommandHandler(server, client)
 {
 }
 

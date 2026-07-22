@@ -58,6 +58,13 @@ class InvalidParametersException : public CommandException
         );
 };
 
+class AlreadyRegisteredException : public CommandException
+{
+    public:
+        AlreadyRegisteredException(
+            const std::string &nickname
+        );
+};
 
 class NotRegisteredException : public CommandException
 {
@@ -88,28 +95,6 @@ class InvalidPasswordException : public CommandException
         );
 };
 
-
-/*
- * USER exceptions
- */
-
-class InvalidUsernameException : public CommandException
-{
-    public:
-        InvalidUsernameException(
-            const std::string &nickname
-        );
-};
-
-class AlreadyRegisteredException : public CommandException
-{
-    public:
-        AlreadyRegisteredException(
-            const std::string &nickname
-        );
-};
-
-
 /*
  * NICK exceptions
  */
@@ -122,11 +107,12 @@ class InvalidNicknameException : public CommandException
         );
 };
 
-class NicknameInUseException : public CommandException
+class AlreadyExistNicknameException : public CommandException
 {
     public:
-        NicknameInUseException(
-            const std::string &nickname
+        AlreadyExistNicknameException(
+            const std::string &nickname,
+            const std::string &used_nickname
         );
 };
 

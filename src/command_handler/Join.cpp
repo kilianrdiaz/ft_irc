@@ -3,7 +3,7 @@
 #include "command_excepts.hpp"
 #include "response.hpp"
 
-JoinChannelCommandHandler::JoinChannelCommandHandler(Server &server, Client &client) : AbstractCommandHandler(server, client)
+JoinChannelCommandHandler::JoinChannelCommandHandler(Server &server, Client &client) : AChannelCommandHandler(server, client)
 {
 }
 
@@ -23,19 +23,15 @@ void JoinChannelCommandHandler::execute(const std::vector<std::string> &params)
 
     std::string providedKey = (params.size() > 1) ? params[1] : "";
 
-    std::map<std::string, Channel*> &channels = _server.getChannels();
-    std::map<std::string, Channel*>::iterator it = channels.find(channelName);
-
-    if (it == channels.end())
+    Channel *channel = this->getChannelByName(channelName);
+    if (!channel)
     {
         Channel *newChannel = new Channel(channelName, providedKey);
         newChannel->addMember(&_client, true);
-        channels[channelName] = newChannel;
+        _server.getChannels()[channelName] = newChannel;
     }
     else
     {
-        Channel *channel = it->second;
-
         if (channel->isMember(_client.getFd()))
             return;
 
@@ -52,5 +48,5 @@ void JoinChannelCommandHandler::execute(const std::vector<std::string> &params)
         channel->removeInvite(_client.getFd());
     }
 
-    _client.write(RPL_JOIN(_client.getNickname(), channelName));
+    _client.write(MSG_JOIN(_client.getNickname(), channelName));
 }
