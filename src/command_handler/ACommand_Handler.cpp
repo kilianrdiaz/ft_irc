@@ -164,6 +164,15 @@ static void handleMode(
     handler.execute(params);
 }
 
+static void handleInvite(
+    Server &server,
+    Client &client,
+    const std::vector<std::string> &params)
+{
+    InviteCommandHandler handler(server, client);
+    handler.execute(params);
+}
+
 static std::map<std::string, HandlerExecutor> &getCommands()
 {
     static std::map<std::string, HandlerExecutor> commands;
@@ -182,6 +191,7 @@ static std::map<std::string, HandlerExecutor> &getCommands()
         commands["KICK"] = &handleKick;
         commands["TOPIC"] = &handleTopic;
         commands["MODE"] = &handleMode;
+        commands["INVITE"] = &handleInvite;
     }
 
     return (commands);

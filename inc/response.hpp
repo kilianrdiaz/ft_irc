@@ -108,6 +108,9 @@
 #define RPL_ENDOFNAMES(nickname, channel) \
     std::string("366 ") + nickname + " " + channel + " :End of /NAMES list"
 
+#define RPL_INVITING(source, target, channel) \
+    std::string("341 ") + source + " " + target + " " + channel
+
 
 /*
 ** ============================================================================

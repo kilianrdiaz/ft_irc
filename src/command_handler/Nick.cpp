@@ -32,9 +32,9 @@ void NickCommandHandler::execute(const std::vector<std::string> &params)
 
     std::string nickname = params[0];
     if (nickname.empty())
-        throw ERR_NONICKNAMEGIVEN(_client.getNickname());
+        throw InvalidNicknameException(_client.getNickname());
 
-    if (_server.searchNickname(nickname))
+    if (_server.searchNickname(nickname, _client.getFd()))
         throw AlreadyExistNicknameException(_client.getNickname(), nickname);
 
     _client.setNickname(nickname);

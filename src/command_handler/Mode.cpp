@@ -27,20 +27,6 @@ static bool parseLimit(const std::string &str, size_t &out)
     return true;
 }
 
-static int findMemberFdByNickname(Channel &channel, const std::string &nickname)
-{
-    std::map<int, ChannelMember> &members = channel.getMembers();
-    std::map<int, ChannelMember>::iterator it = members.begin();
-
-    while (it != members.end())
-    {
-        if (it->second.client->getNickname() == nickname)
-            return it->first;
-        it++;
-    }
-    return -1;
-}
-
 void ModeCommandHandler::execute(const std::vector<std::string> &params)
 {
     if (params.size() < 2)
@@ -108,7 +94,7 @@ void ModeCommandHandler::execute(const std::vector<std::string> &params)
                     throw InvalidParametersException(_client.getNickname(), "MODE");
 
                 std::string targetNick = params[argIndex++];
-                int targetFd = findMemberFdByNickname(*channel, targetNick);
+                int targetFd = this->findMemberFdByNickname(*channel, targetNick);
 
                 if (targetFd == -1)
                     throw ChannelException(ERR_USERNOTINCHANNEL(_client.getNickname(), targetNick, channelName));

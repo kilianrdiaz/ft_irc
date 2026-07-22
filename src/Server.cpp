@@ -203,13 +203,13 @@ void Server::tryRegisterClient(Client &client)
     }
 }
 
-Client *Server::searchNickname(const std::string &nickname)
+Client *Server::searchNickname(const std::string &nickname, int excludeFd)
 {
     std::map<int, Client*>::iterator it = clients.begin();
 
     while (it != clients.end())
     {
-        if (it->second->getNickname() == nickname)
+        if (it->first != excludeFd && it->second->getNickname() == nickname)
             return it->second;
         it++;
     }

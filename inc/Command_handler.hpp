@@ -236,17 +236,27 @@ class PingCommandHandler : public AbstractCommandHandler
 
 class AChannelCommandHandler : public AbstractCommandHandler
 {
-    public:
-        AChannelCommandHandler(
-            Server &server,
-            Client &client
-        );
     protected:
         std::vector<std::string> parseChannelList(
             const std::string &channelList
         );
 
+        int findMemberFdByNickname(
+            Channel &channel,
+            const std::string &nickname
+        );
+
+        void broadcast(
+            Channel &channel,
+            const std::string &message,
+            int excludeFd = -1
+        );
+
     public:
+        AChannelCommandHandler(
+            Server &server,
+            Client &client
+        );
         virtual ~AChannelCommandHandler();
 
         virtual void execute(
@@ -358,6 +368,27 @@ class ModeCommandHandler : public AChannelCommandHandler
         );
 
         virtual ~ModeCommandHandler();
+
+        virtual void execute(
+            const std::vector<std::string> &params
+        );
+};
+
+/*
+ * ========================================================================== *
+ * INVITE
+ * ========================================================================== *
+ */
+
+class InviteCommandHandler : public AChannelCommandHandler
+{
+    public:
+        InviteCommandHandler(
+            Server &server,
+            Client &client
+        );
+
+        virtual ~InviteCommandHandler();
 
         virtual void execute(
             const std::vector<std::string> &params

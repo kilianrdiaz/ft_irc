@@ -116,6 +116,15 @@ class AlreadyExistNicknameException : public CommandException
         );
 };
 
+class NoSuchNickException : public CommandException
+{
+    public:
+        NoSuchNickException(
+            const std::string &nickname,
+            const std::string &target
+        );
+};
+
 
 /*
  * PING exceptions

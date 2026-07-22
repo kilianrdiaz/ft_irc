@@ -106,6 +106,21 @@ AlreadyExistNicknameException::AlreadyExistNicknameException(
 {
 }
 
+InvalidNicknameException::InvalidNicknameException(
+    const std::string &nickname)
+    : CommandException(
+        ERR_NONICKNAMEGIVEN(nickname))
+{
+}
+
+NoSuchNickException::NoSuchNickException(
+    const std::string &nickname,
+    const std::string &target)
+    : CommandException(
+        ERR_NOSUCHNICK(nickname, target))
+{
+}
+
 
 /*
 ** ============================================================================
@@ -119,7 +134,6 @@ InvalidPingException::InvalidPingException(
         ERR_NEEDMOREPARAMS(nickname, "PING"))
 {
 }
-
 
 /*
 ** ============================================================================

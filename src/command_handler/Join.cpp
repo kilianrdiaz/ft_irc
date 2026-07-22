@@ -48,16 +48,17 @@ void JoinChannelCommandHandler::execute(const std::vector<std::string> &params)
 
             Channel *channel = it->second;
 
-            if (channel->isMember(_client.getFd()))
-                throw AlreadyInChannelException(_client.getNickname(), currentChannelName);
-            if (channel->getInviteOnly())
+            if (channel->getInviteOnly() && !channel->isInvited(_client.getFd()))
                 throw InviteOnlyChannelException(_client.getNickname(), currentChannelName);
-            else if (channel->getKey() != "" && channel->getKey() != providedKey)
+
+            if (channel->getKey() != "" && channel->getKey() != providedKey)
                 throw BadChannelKeyException(_client.getNickname(), currentChannelName);
+
             if (channel->hasUserLimit() && channel->isFull())
                 throw ChannelFullException(_client.getNickname(), currentChannelName);
 
             channel->addMember(&_client, 0);
+            channel->removeInvite(_client.getFd());
             _client.write(MSG_JOIN(_client.getNickname(), currentChannelName));
 
             std::string memberList;

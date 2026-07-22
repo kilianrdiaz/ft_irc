@@ -31,7 +31,7 @@ class Server
         void receiveNewData(int fd);
         void replyToClient(int fd, const std::string &message);
         void tryRegisterClient(Client &client);
-        Client *searchNickname(const std::string &nickname);
+        Client *searchNickname(const std::string &nickname, int excludeFd);
         std::string getPassword() const { return password; }
         std::map<int, Client*> &getClients() { return clients; }
         std::map<std::string, Channel*> &getChannels() { return channels; }
