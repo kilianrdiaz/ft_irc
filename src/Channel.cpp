@@ -159,3 +159,16 @@ bool Channel::isFull() const
 {
     return hasUserLimit() && memberCount() >= userLimit;
 }
+
+
+void Channel::broadcast(const std::string &message, int excludeFd)
+{
+    std::map<int, ChannelMember>::iterator it = members.begin();
+
+    while (it != members.end())
+    {
+        if (it->first != excludeFd)
+            it->second.client->write(message);
+        it++;
+    }
+}

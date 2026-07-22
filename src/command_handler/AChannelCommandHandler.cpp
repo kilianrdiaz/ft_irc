@@ -61,13 +61,5 @@ void AChannelCommandHandler::broadcast(
     const std::string &message,
     int excludeFd)
 {
-    std::map<int, ChannelMember> &members = channel.getMembers();
-    std::map<int, ChannelMember>::iterator it = members.begin();
-
-    while (it != members.end())
-    {
-        if (it->first != excludeFd)
-            it->second.client->write(message);
-        it++;
-    }
+    channel.broadcast(message, excludeFd);
 }

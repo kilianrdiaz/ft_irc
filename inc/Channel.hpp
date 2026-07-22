@@ -64,4 +64,6 @@ class Channel
         void setUserLimit(size_t limit);
         bool hasUserLimit() const;
         bool isFull() const;
+
+        void broadcast(const std::string &message, int excludeFd = -1);
 };

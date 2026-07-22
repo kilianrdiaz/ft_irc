@@ -16,7 +16,8 @@
 
 Client::Client() : _fd(-1), _nickname("*"), _passOk(false), _registered(false) {}
 Client::Client(int socket_fd) : _fd(socket_fd), _nickname("*"), _passOk(false), _registered(false) {}
-Client::Client(const Client &other) : _fd(other._fd), _hostname(other._hostname), _recvBuffer(other._recvBuffer), _nickname(other._nickname), _username(other._username), _passOk(other._passOk), _registered(other._registered) {}
+Client::Client(const Client &other) : _fd(other._fd), _hostname(other._hostname), _recvBuffer(other._recvBuffer),
+         _nickname(other._nickname), _username(other._username), _passOk(other._passOk), _registered(other._registered) {}
 Client::~Client() {}
 
 Client &Client::operator=(const Client &other)

@@ -123,9 +123,14 @@ void Server::receiveNewData(int fd)
 
     ssize_t bytes = recv(fd, buf, sizeof(buf) - 1, 0); // recibe la data en buf
 
-    if (bytes <= 0) // checkear si el cliente se ha desconectado
+    if (bytes <= 0)
     {
         std::cout << "Client <" << fd << "> Disconnected" << std::endl;
+
+        Client *disconnectedClient = getClientByFd(fd);
+        if (disconnectedClient != NULL)
+            disconnectClient(*disconnectedClient, "Connection closed");
+
         clearClient(fd);
         close(fd);
         return;
@@ -133,11 +138,10 @@ void Server::receiveNewData(int fd)
     
     buf[bytes] = '\0';
     
-    std::map<int, Client*>::iterator it = clients.find(fd);
-    if (it == clients.end())
-        return; // el cliente ya no existe, nada que hacer
+    Client *client = getClientByFd(fd);
+    if (client == NULL)
+        return;
 
-    Client *client = it->second;
     std::string &buffer = client->getBuffer();
     buffer.append(buf, bytes);  // acumula lo recibido en el buffer del cliente
 
@@ -154,13 +158,20 @@ void Server::receiveNewData(int fd)
             continue;
 
         Command command = AbstractCommandHandler::parseLine(line);
-        try {
+        try
+        {
             AbstractCommandHandler::executeCommand(*this, *client, command.name, command.params);
+        }
+        catch (const QuitException &e)
+        {
+            clearClient(fd);
+            close(fd);
+            return;
         }
         catch (const CommandException &e)
         {
             this->replyToClient(fd, e.what());
-            return ;
+            return;
         }
     }
 }
@@ -216,15 +227,21 @@ Client *Server::searchNickname(const std::string &nickname, int excludeFd)
     return NULL;
 }
 
-void Server::replyToClient(int fd, const std::string &message)
+Client *Server::getClientByFd(int fd)
 {
     std::map<int, Client*>::iterator it = clients.find(fd);
-    if (it != clients.end())
-    {
-        Client *client = it->second;
-        client->write(message);
-    }
+    if (it == clients.end())
+        return NULL;
+    return it->second;
 }
+
+void Server::replyToClient(int fd, const std::string &message)
+{
+    Client *client = getClientByFd(fd);
+    if (client != NULL)
+        client->write(message);
+}
+
 
 void Server::clearClient(int fd)
 {
@@ -243,4 +260,36 @@ void Server::clearClient(int fd)
         delete it->second; // liberar la memoria del cliente
         clients.erase(it); // eliminar la entrada del map
     }
+}
+
+void Server::removeClientFromChannels(Client &client, const std::string &message)
+{
+    std::map<std::string, Channel*>::iterator it = channels.begin();
+
+    while (it != channels.end())
+    {
+        Channel *channel = it->second;
+
+        if (channel->isMember(client.getFd()))
+        {
+            channel->removeMember(client.getFd());
+            channel->broadcast(message);
+
+            if (channel->memberCount() == 0)
+            {
+                delete channel;
+                std::map<std::string, Channel*>::iterator toErase = it;
+                ++it;
+                channels.erase(toErase);
+                continue;
+            }
+        }
+        ++it;
+    }
+}
+
+void Server::disconnectClient(Client &client, const std::string &reason)
+{
+    std::string quitMsg = MSG_QUIT(client.get_prefix(), reason);
+    removeClientFromChannels(client, quitMsg);
 }

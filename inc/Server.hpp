@@ -36,8 +36,13 @@ class Server
         std::map<int, Client*> &getClients() { return clients; }
         std::map<std::string, Channel*> &getChannels() { return channels; }
 
+        Client *getClientByFd(int fd);
+
         static void signalHandler(int signum);
 
         void closeFds();
         void clearClient(int fd);
+
+        void removeClientFromChannels(Client &client, const std::string &message);
+        void disconnectClient(Client &client, const std::string &reason);
 };

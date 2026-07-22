@@ -191,20 +191,20 @@ class PingCommandHandler : public AbstractCommandHandler
  * ========================================================================== *
  */
 
-// class QuitCommandHandler : public AbstractCommandHandler
-// {
-//     public:
-//         QuitCommandHandler(
-//             Server &server,
-//             Client &client
-//         );
+class QuitCommandHandler : public AbstractCommandHandler
+{
+    public:
+        QuitCommandHandler(
+            Server &server,
+            Client &client
+        );
 
-//         virtual ~QuitCommandHandler();
+        virtual ~QuitCommandHandler();
 
-//         virtual void execute(
-//             const std::vector<std::string> &params
-//         );
-// };
+        virtual void execute(
+            const std::vector<std::string> &params
+        );
+};
 
 
 
