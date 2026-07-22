@@ -142,6 +142,15 @@ class ChannelException : public CommandException
         );
 };
 
+class NoSuchChannelException : public ChannelException
+{
+    public:
+        NoSuchChannelException(
+            const std::string &nickname,
+            const std::string &channel
+        );
+};
+
 class InvalidChannelException : public ChannelException
 {
     public:

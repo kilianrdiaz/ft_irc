@@ -39,19 +39,3 @@ std::vector<std::string> AChannelCommandHandler::parseChannelList(
 
     return channels;
 }
-
-Channel *AChannelCommandHandler::getChannelByName(
-    const std::string &channelName)
-{
-    std::map<std::string, Channel*> &channels = _server.getChannels();
-    std::map<std::string, Channel*>::iterator it = channels.find(channelName);
-
-    // si no empiezan con #, no es un canal válido
-    if (channelName.empty() || channelName[0] != '#')
-        throw InvalidChannelException(_client.getNickname(), channelName);
-
-    if (it == channels.end())
-        throw InvalidChannelException(_client.getNickname(), channelName);
-
-    return it->second;
-}

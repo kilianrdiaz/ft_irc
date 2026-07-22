@@ -246,10 +246,6 @@ class AChannelCommandHandler : public AbstractCommandHandler
             const std::string &channelList
         );
 
-        Channel *getChannelByName(
-            const std::string &channelName
-        );
-
     public:
         virtual ~AChannelCommandHandler();
 

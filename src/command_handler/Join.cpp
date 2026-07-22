@@ -17,36 +17,69 @@ void JoinChannelCommandHandler::execute(const std::vector<std::string> &params)
         throw InvalidParametersException(_client.getNickname(), "JOIN");
 
     std::string channelName = params[0];
-
-    if (channelName.empty() || channelName[0] != '#')
-        throw InvalidChannelException(_client.getNickname(), channelName);
-
     std::string providedKey = (params.size() > 1) ? params[1] : "";
 
-    Channel *channel = this->getChannelByName(channelName);
-    if (!channel)
+    std::vector<std::string> channelNames = parseChannelList(channelName);
+    for (size_t i = 0; i < channelNames.size(); i++)
     {
-        Channel *newChannel = new Channel(channelName, providedKey);
-        newChannel->addMember(&_client, true);
-        _server.getChannels()[channelName] = newChannel;
+        std::string currentChannelName = channelNames[i];
+
+        try
+        {
+            if (currentChannelName.empty() || currentChannelName[0] != '#')
+                throw InvalidChannelException(_client.getNickname(), currentChannelName);
+
+            std::map<std::string, Channel*>::iterator it =
+                _server.getChannels().find(currentChannelName);
+
+            if (it == _server.getChannels().end())
+            {
+                // Canal no existe -> crearlo (ya sabemos que el nombre es válido, empieza por #)
+                Channel *newChannel = new Channel(currentChannelName, providedKey);
+                newChannel->addMember(&_client, 1);
+                _server.getChannels()[currentChannelName] = newChannel;
+                _client.write(MSG_JOIN(_client.getNickname(), currentChannelName));
+                _server.replyToClient(_client.getFd(),
+                    RPL_NAMREPLY(_client.getNickname(), currentChannelName, _client.getNickname()));
+                _server.replyToClient(_client.getFd(),
+                    RPL_ENDOFNAMES(_client.getNickname(), currentChannelName));
+                continue;
+            }
+
+            Channel *channel = it->second;
+
+            if (channel->isMember(_client.getFd()))
+                throw AlreadyInChannelException(_client.getNickname(), currentChannelName);
+            if (channel->getInviteOnly())
+                throw InviteOnlyChannelException(_client.getNickname(), currentChannelName);
+            else if (channel->getKey() != "" && channel->getKey() != providedKey)
+                throw BadChannelKeyException(_client.getNickname(), currentChannelName);
+            if (channel->hasUserLimit() && channel->isFull())
+                throw ChannelFullException(_client.getNickname(), currentChannelName);
+
+            channel->addMember(&_client, 0);
+            _client.write(MSG_JOIN(_client.getNickname(), currentChannelName));
+
+            std::string memberList;
+            {
+                const std::map<int, ChannelMember> &members = channel->getMembers();
+                size_t j = 0;
+                for (std::map<int, ChannelMember>::const_iterator mit = members.begin();
+                     mit != members.end(); ++mit)
+                {
+                    if (j) memberList += " ";
+                    memberList += mit->second.client->getNickname();
+                    j++;
+                }
+            }
+            _server.replyToClient(_client.getFd(),
+                RPL_NAMREPLY(_client.getNickname(), currentChannelName, memberList));
+            _server.replyToClient(_client.getFd(),
+                RPL_ENDOFNAMES(_client.getNickname(), currentChannelName));
+        }
+        catch (CommandException &e)
+        {
+            _server.replyToClient(_client.getFd(), e.what());
+        }
     }
-    else
-    {
-        if (channel->isMember(_client.getFd()))
-            return;
-
-        if (channel->getInviteOnly() && !channel->isInvited(_client.getFd()))
-            throw InviteOnlyChannelException(_client.getNickname(), channelName);
-
-        if (channel->hasKey() && channel->getKey() != providedKey)
-            throw BadChannelKeyException(_client.getNickname(), channelName);
-
-        if (channel->isFull())
-            throw ChannelFullException(_client.getNickname(), channelName);
-
-        channel->addMember(&_client, false);
-        channel->removeInvite(_client.getFd());
-    }
-
-    _client.write(MSG_JOIN(_client.getNickname(), channelName));
 }
