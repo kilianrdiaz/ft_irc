@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "Client.hpp"
+#include "Channel.hpp"
 
 class Server
 {
@@ -16,8 +17,10 @@ class Server
         std::string password;
         int serSocketFd;
         static bool sig;
+
         std::map<int, Client*> clients;
         std::vector<struct pollfd> fds;
+        std::map<std::string, Channel*> channels;
 
         public:
         Server(int port, std::string password);
@@ -26,8 +29,12 @@ class Server
         void serSocket();
         void acceptNewClient();
         void receiveNewData(int fd);
+        void replyToClient(int fd, const std::string &message);
+        void tryRegisterClient(Client &client);
+        Client *searchNickname(const std::string &nickname, int excludeFd);
         std::string getPassword() const { return password; }
         std::map<int, Client*> &getClients() { return clients; }
+        std::map<std::string, Channel*> &getChannels() { return channels; }
 
         static void signalHandler(int signum);
 

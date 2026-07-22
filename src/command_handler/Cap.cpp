@@ -29,11 +29,11 @@ void CapCommandHandler::execute(const std::vector<std::string> &params)
     std::string subcommand = params[0];
     if (subcommand == "LS")
     {
-        _client.reply("CAP * LS :multi-prefix");
+        _client.write("CAP * LS :multi-prefix");
     }
     else if (subcommand == "REQ")
     {
-        _client.reply("CAP * ACK :multi-prefix");
+        _client.write("CAP * ACK :multi-prefix");
     }
     else
     {

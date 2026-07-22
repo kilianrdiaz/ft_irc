@@ -58,6 +58,13 @@ class InvalidParametersException : public CommandException
         );
 };
 
+class AlreadyRegisteredException : public CommandException
+{
+    public:
+        AlreadyRegisteredException(
+            const std::string &nickname
+        );
+};
 
 class NotRegisteredException : public CommandException
 {
@@ -88,28 +95,6 @@ class InvalidPasswordException : public CommandException
         );
 };
 
-
-/*
- * USER exceptions
- */
-
-class InvalidUsernameException : public CommandException
-{
-    public:
-        InvalidUsernameException(
-            const std::string &nickname
-        );
-};
-
-class AlreadyRegisteredException : public CommandException
-{
-    public:
-        AlreadyRegisteredException(
-            const std::string &nickname
-        );
-};
-
-
 /*
  * NICK exceptions
  */
@@ -122,11 +107,21 @@ class InvalidNicknameException : public CommandException
         );
 };
 
-class NicknameInUseException : public CommandException
+class AlreadyExistNicknameException : public CommandException
 {
     public:
-        NicknameInUseException(
-            const std::string &nickname
+        AlreadyExistNicknameException(
+            const std::string &nickname,
+            const std::string &used_nickname
+        );
+};
+
+class NoSuchNickException : public CommandException
+{
+    public:
+        NoSuchNickException(
+            const std::string &nickname,
+            const std::string &target
         );
 };
 
@@ -153,6 +148,15 @@ class ChannelException : public CommandException
     public:
         ChannelException(
             const std::string &message
+        );
+};
+
+class NoSuchChannelException : public ChannelException
+{
+    public:
+        NoSuchChannelException(
+            const std::string &nickname,
+            const std::string &channel
         );
 };
 
@@ -192,6 +196,32 @@ class NotInChannelException : public ChannelException
         );
 };
 
+class InviteOnlyChannelException : public ChannelException
+{
+    public:
+        InviteOnlyChannelException(
+            const std::string &nickname,
+            const std::string &channel
+        );
+};
+
+class BadChannelKeyException : public ChannelException
+{
+    public:
+        BadChannelKeyException(
+            const std::string &nickname,
+            const std::string &channel
+        );
+};
+
+class ChannelFullException : public ChannelException
+{
+    public:
+        ChannelFullException(
+            const std::string &nickname,
+            const std::string &channel
+        );
+};
 
 /*
  * MODE exceptions

@@ -9,11 +9,19 @@ SRCS = main.cpp \
        Client.cpp \
        command_handler/exceptions.cpp \
        command_handler/ACommand_Handler.cpp \
+       command_handler/AChannelCommandHandler.cpp \
        command_handler/Pass.cpp \
        command_handler/User.cpp \
        command_handler/Nick.cpp \
        command_handler/Cap.cpp \
-       command_handler/Ping.cpp
+       command_handler/Ping.cpp \
+       command_handler/Join.cpp \
+       command_handler/Part.cpp \
+       command_handler/Topic.cpp \
+       command_handler/Mode.cpp \
+       command_handler/Kick.cpp \
+       command_handler/Invite.cpp \
+       Channel.cpp
 
 OBJS = $(SRCS:%.cpp=$(OBJS_DIR)/%.o)
 DEPS = $(OBJS:.o=.d)

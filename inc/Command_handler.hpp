@@ -228,28 +228,41 @@ class PingCommandHandler : public AbstractCommandHandler
 //         );
 // };
 
-
 /*
  * ========================================================================== *
  * CHANNEL
  * ========================================================================== *
  */
 
-// class ChannelCommandHandler : public AbstractCommandHandler
-// {
-//     protected:
-//         ChannelCommandHandler(
-//             Server &server,
-//             Client &client
-//         );
+class AChannelCommandHandler : public AbstractCommandHandler
+{
+    protected:
+        std::vector<std::string> parseChannelList(
+            const std::string &channelList
+        );
 
-//     public:
-//         virtual ~ChannelCommandHandler();
+        int findMemberFdByNickname(
+            Channel &channel,
+            const std::string &nickname
+        );
 
-//         virtual void execute(
-//             const std::vector<std::string> &params
-//         ) = 0;
-// };
+        void broadcast(
+            Channel &channel,
+            const std::string &message,
+            int excludeFd = -1
+        );
+
+    public:
+        AChannelCommandHandler(
+            Server &server,
+            Client &client
+        );
+        virtual ~AChannelCommandHandler();
+
+        virtual void execute(
+            const std::vector<std::string> &params
+        ) = 0;
+};
 
 
 /*
@@ -258,20 +271,20 @@ class PingCommandHandler : public AbstractCommandHandler
  * ========================================================================== *
  */
 
-// class JoinChannelCommandHandler : public ChannelCommandHandler
-// {
-//     public:
-//         JoinChannelCommandHandler(
-//             Server &server,
-//             Client &client
-//         );
+class JoinChannelCommandHandler : public AChannelCommandHandler
+{
+    public:
+        JoinChannelCommandHandler(
+            Server &server,
+            Client &client
+        );
 
-//         virtual ~JoinChannelCommandHandler();
+        virtual ~JoinChannelCommandHandler();
 
-//         virtual void execute(
-//             const std::vector<std::string> &params
-//         );
-// };
+        virtual void execute(
+            const std::vector<std::string> &params
+        );
+};
 
 
 /*
@@ -280,20 +293,20 @@ class PingCommandHandler : public AbstractCommandHandler
  * ========================================================================== *
  */
 
-// class PartChannelCommandHandler : public ChannelCommandHandler
-// {
-//     public:
-//         PartChannelCommandHandler(
-//             Server &server,
-//             Client &client
-//         );
+class PartChannelCommandHandler : public AChannelCommandHandler
+{
+    public:
+        PartChannelCommandHandler(
+            Server &server,
+            Client &client
+        );
 
-//         virtual ~PartChannelCommandHandler();
+        virtual ~PartChannelCommandHandler();
 
-//         virtual void execute(
-//             const std::vector<std::string> &params
-//         );
-// };
+        virtual void execute(
+            const std::vector<std::string> &params
+        );
+};
 
 
 /*
@@ -302,20 +315,20 @@ class PingCommandHandler : public AbstractCommandHandler
  * ========================================================================== *
  */
 
-// class KickChannelCommandHandler : public ChannelCommandHandler
-// {
-//     public:
-//         KickChannelCommandHandler(
-//             Server &server,
-//             Client &client
-//         );
+class KickChannelCommandHandler : public AChannelCommandHandler
+{
+    public:
+        KickChannelCommandHandler(
+            Server &server,
+            Client &client
+        );
 
-//         virtual ~KickChannelCommandHandler();
+        virtual ~KickChannelCommandHandler();
 
-//         virtual void execute(
-//             const std::vector<std::string> &params
-//         );
-// };
+        virtual void execute(
+            const std::vector<std::string> &params
+        );
+};
 
 
 /*
@@ -324,20 +337,20 @@ class PingCommandHandler : public AbstractCommandHandler
  * ========================================================================== *
  */
 
-// class TopicCommandHandler : public AbstractCommandHandler
-// {
-//     public:
-//         TopicCommandHandler(
-//             Server &server,
-//             Client &client
-//         );
+class TopicCommandHandler : public AChannelCommandHandler
+{
+    public:
+        TopicCommandHandler(
+            Server &server,
+            Client &client
+        );
 
-//         virtual ~TopicCommandHandler();
+        virtual ~TopicCommandHandler();
 
-//         virtual void execute(
-//             const std::vector<std::string> &params
-//         );
-// };
+        virtual void execute(
+            const std::vector<std::string> &params
+        );
+};
 
 
 /*
@@ -346,19 +359,40 @@ class PingCommandHandler : public AbstractCommandHandler
  * ========================================================================== *
  */
 
-// class ModeCommandHandler : public AbstractCommandHandler
-// {
-//     public:
-//         ModeCommandHandler(
-//             Server &server,
-//             Client &client
-//         );
+class ModeCommandHandler : public AChannelCommandHandler
+{
+    public:
+        ModeCommandHandler(
+            Server &server,
+            Client &client
+        );
 
-//         virtual ~ModeCommandHandler();
+        virtual ~ModeCommandHandler();
 
-//         virtual void execute(
-//             const std::vector<std::string> &params
-//         );
-// };
+        virtual void execute(
+            const std::vector<std::string> &params
+        );
+};
+
+/*
+ * ========================================================================== *
+ * INVITE
+ * ========================================================================== *
+ */
+
+class InviteCommandHandler : public AChannelCommandHandler
+{
+    public:
+        InviteCommandHandler(
+            Server &server,
+            Client &client
+        );
+
+        virtual ~InviteCommandHandler();
+
+        virtual void execute(
+            const std::vector<std::string> &params
+        );
+};
 
 #endif

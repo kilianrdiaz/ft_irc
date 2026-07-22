@@ -119,50 +119,59 @@ static void handlePing(
 //     handler.execute(params);
 // }
 
-// static void handleJoin(
-//     Server &server,
-//     Client &client,
-//     const std::vector<std::string> &params)
-// {
-//     JoinChannelCommandHandler handler(server, client);
-//     handler.execute(params);
-// }
+static void handleJoin(
+    Server &server,
+    Client &client,
+    const std::vector<std::string> &params)
+{
+    JoinChannelCommandHandler handler(server, client);
+    handler.execute(params);
+}
 
-// static void handlePart(
-//     Server &server,
-//     Client &client,
-//     const std::vector<std::string> &params)
-// {
-//     PartChannelCommandHandler handler(server, client);
-//     handler.execute(params);
-// }
+static void handlePart(
+    Server &server,
+    Client &client,
+    const std::vector<std::string> &params)
+{
+    PartChannelCommandHandler handler(server, client);
+    handler.execute(params);
+}
 
-// static void handleKick(
-//     Server &server,
-//     Client &client,
-//     const std::vector<std::string> &params)
-// {
-//     KickChannelCommandHandler handler(server, client);
-//     handler.execute(params);
-// }
+static void handleKick(
+    Server &server,
+    Client &client,
+    const std::vector<std::string> &params)
+{
+    KickChannelCommandHandler handler(server, client);
+    handler.execute(params);
+}
 
-// static void handleTopic(
-//     Server &server,
-//     Client &client,
-//     const std::vector<std::string> &params)
-// {
-//     TopicCommandHandler handler(server, client);
-//     handler.execute(params);
-// }
+static void handleTopic(
+    Server &server,
+    Client &client,
+    const std::vector<std::string> &params)
+{
+    TopicCommandHandler handler(server, client);
+    handler.execute(params);
+}
 
-// static void handleMode(
-//     Server &server,
-//     Client &client,
-//     const std::vector<std::string> &params)
-// {
-//     ModeCommandHandler handler(server, client);
-//     handler.execute(params);
-// }
+static void handleMode(
+    Server &server,
+    Client &client,
+    const std::vector<std::string> &params)
+{
+    ModeCommandHandler handler(server, client);
+    handler.execute(params);
+}
+
+static void handleInvite(
+    Server &server,
+    Client &client,
+    const std::vector<std::string> &params)
+{
+    InviteCommandHandler handler(server, client);
+    handler.execute(params);
+}
 
 static std::map<std::string, HandlerExecutor> &getCommands()
 {
@@ -177,11 +186,12 @@ static std::map<std::string, HandlerExecutor> &getCommands()
         commands["CAP"] = &handleCap;
         // commands["QUIT"] = &handleQuit;
         // commands["PRIVMSG"] = &handlePrivmsg;
-        // commands["JOIN"] = &handleJoin;
-        // commands["PART"] = &handlePart;
-        // commands["KICK"] = &handleKick;
-        // commands["TOPIC"] = &handleTopic;
-        // commands["MODE"] = &handleMode;
+        commands["JOIN"] = &handleJoin;
+        commands["PART"] = &handlePart;
+        commands["KICK"] = &handleKick;
+        commands["TOPIC"] = &handleTopic;
+        commands["MODE"] = &handleMode;
+        commands["INVITE"] = &handleInvite;
     }
 
     return (commands);

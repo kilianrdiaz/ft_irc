@@ -9,6 +9,8 @@
 #include <cstring>         //-> for memset()
 #include "Server.hpp"
 #include "Command_handler.hpp"
+#include "command_excepts.hpp"
+#include "response.hpp"
 
 bool Server::sig = false;
 
@@ -157,7 +159,7 @@ void Server::receiveNewData(int fd)
         }
         catch (const CommandException &e)
         {
-            client->write(e.what());
+            this->replyToClient(fd, e.what());
             return ;
         }
     }
@@ -175,10 +177,52 @@ void Server::closeFds()
         it++;
     }
 
+    std::map<std::string, Channel*>::iterator cit = channels.begin();
+
+    while (cit != channels.end())
+    {
+        delete cit->second;
+        cit++;
+    }
+
     if (serSocketFd != -1)
     {
         std::cout << "Server <" << serSocketFd << "> Disconnected" << std::endl;
 		close(serSocketFd);
+    }
+}
+
+void Server::tryRegisterClient(Client &client)
+{
+    if (client.getRegistered())
+        return;
+    if (client.getPassOk() && !client.getNickname().empty() && !client.getUsername().empty())
+    {
+        client.setRegistered(true);
+        this->replyToClient(client.getFd(), RPL_WELCOME(client.getNickname()));
+    }
+}
+
+Client *Server::searchNickname(const std::string &nickname, int excludeFd)
+{
+    std::map<int, Client*>::iterator it = clients.begin();
+
+    while (it != clients.end())
+    {
+        if (it->first != excludeFd && it->second->getNickname() == nickname)
+            return it->second;
+        it++;
+    }
+    return NULL;
+}
+
+void Server::replyToClient(int fd, const std::string &message)
+{
+    std::map<int, Client*>::iterator it = clients.find(fd);
+    if (it != clients.end())
+    {
+        Client *client = it->second;
+        client->write(message);
     }
 }
 
