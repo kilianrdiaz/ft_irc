@@ -207,7 +207,10 @@ void Server::tryRegisterClient(Client &client)
 {
     if (client.getRegistered())
         return;
-    if (client.getPassOk() && !client.getNickname().empty() && !client.getUsername().empty())
+
+    bool hasRealNickname = !client.getNickname().empty() && client.getNickname() != "*";
+
+    if (client.getPassOk() && hasRealNickname && !client.getUsername().empty())
     {
         client.setRegistered(true);
         this->replyToClient(client.getFd(), RPL_WELCOME(client.getNickname()));

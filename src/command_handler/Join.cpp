@@ -48,6 +48,9 @@ void JoinChannelCommandHandler::execute(const std::vector<std::string> &params)
 
             Channel *channel = it->second;
 
+            if (channel->isMember(_client.getFd()))
+                throw AlreadyInChannelException(_client.getNickname(), currentChannelName);
+
             if (channel->getInviteOnly() && !channel->isInvited(_client.getFd()))
                 throw InviteOnlyChannelException(_client.getNickname(), currentChannelName);
 

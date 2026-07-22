@@ -258,6 +258,14 @@ void AbstractCommandHandler::executeCommand(
             commandName
         );
     }
-    
+
+    bool allowedBeforeRegister =
+        (commandName == "PASS" || commandName == "NICK" ||
+         commandName == "USER" || commandName == "CAP"  ||
+         commandName == "PING" || commandName == "QUIT");
+
+    if (!client.getRegistered() && !allowedBeforeRegister)
+        throw NotRegisteredException(client.getNickname());
+
     it->second(server, client, params);
 }
