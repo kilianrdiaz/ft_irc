@@ -207,26 +207,6 @@ class PingCommandHandler : public AbstractCommandHandler
 // };
 
 
-/*
- * ========================================================================== *
- * PRIVMSG
- * ========================================================================== *
- */
-
-// class PrivmsgCommandHandler : public AbstractCommandHandler
-// {
-//     public:
-//         PrivmsgCommandHandler(
-//             Server &server,
-//             Client &client
-//         );
-
-//         virtual ~PrivmsgCommandHandler();
-
-//         virtual void execute(
-//             const std::vector<std::string> &params
-//         );
-// };
 
 /*
  * ========================================================================== *
@@ -395,4 +375,24 @@ class InviteCommandHandler : public AChannelCommandHandler
         );
 };
 
+/*
+ * ========================================================================== *
+ * PRIVMSG
+ * ========================================================================== *
+ */
+
+class PrivmsgCommandHandler : public AChannelCommandHandler
+{
+    public:
+        PrivmsgCommandHandler(
+            Server &server,
+            Client &client
+        );
+
+        virtual ~PrivmsgCommandHandler();
+
+        virtual void execute(
+            const std::vector<std::string> &params
+        );
+};
 #endif

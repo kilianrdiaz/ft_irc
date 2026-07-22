@@ -236,4 +236,17 @@ class InvalidModeException : public CommandException
         );
 };
 
+/*
+ * PRIVMSG exceptions
+ */
+
+class CannotSendToChannelException : public ChannelException
+{
+    public:
+        CannotSendToChannelException(
+            const std::string &nickname,
+            const std::string &channel
+        );
+};
+
 #endif

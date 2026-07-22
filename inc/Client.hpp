@@ -14,7 +14,6 @@ class Client
         std::string _realname;
         bool _passOk;
         bool _registered;
-        std::string get_prefix() const;
 
     public:
         Client();
@@ -29,6 +28,7 @@ class Client
         std::string getNickname() const;
         std::string getUsername() const;
         std::string getRealname() const;
+        std::string get_prefix() const;
         bool getPassOk();
         bool getRegistered();
 

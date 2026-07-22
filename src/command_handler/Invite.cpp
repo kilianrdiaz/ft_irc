@@ -11,20 +11,6 @@ InviteCommandHandler::~InviteCommandHandler()
 {
 }
 
-static Client *findClientByNickname(Server &server, const std::string &nickname)
-{
-    std::map<int, Client*> &clients = server.getClients();
-    std::map<int, Client*>::iterator it = clients.begin();
-
-    while (it != clients.end())
-    {
-        if (it->second->getNickname() == nickname)
-            return it->second;
-        it++;
-    }
-    return NULL;
-}
-
 void InviteCommandHandler::execute(const std::vector<std::string> &params)
 {
     if (params.size() != 2)
@@ -47,7 +33,7 @@ void InviteCommandHandler::execute(const std::vector<std::string> &params)
     if (channel->getInviteOnly() && !channel->isOperator(_client.getFd()))
         throw NotPrivilegedException(_client.getNickname(), channelName);
 
-    Client *targetClient = findClientByNickname(_server, targetNick);
+    Client *targetClient = _server.searchNickname(targetNick);
 
     if (targetClient == NULL)
         throw NoSuchNickException(_client.getNickname(), targetNick);

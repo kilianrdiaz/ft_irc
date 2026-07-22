@@ -203,6 +203,14 @@ ChannelFullException::ChannelFullException(
 {
 }
 
+CannotSendToChannelException::CannotSendToChannelException(
+    const std::string &nickname,
+    const std::string &channel)
+    : ChannelException(
+        ERR_CANNOTSENDTOCHAN(nickname, channel))
+{
+}
+
 
 /*
 ** ============================================================================

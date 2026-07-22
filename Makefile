@@ -21,6 +21,7 @@ SRCS = main.cpp \
        command_handler/Mode.cpp \
        command_handler/Kick.cpp \
        command_handler/Invite.cpp \
+       command_handler/Privmsg.cpp \
        Channel.cpp
 
 OBJS = $(SRCS:%.cpp=$(OBJS_DIR)/%.o)

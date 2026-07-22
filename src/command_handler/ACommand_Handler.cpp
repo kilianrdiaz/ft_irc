@@ -110,14 +110,14 @@ static void handlePing(
 //     handler.execute(params);
 // }
 
-// static void handlePrivmsg(
-//     Server &server,
-//     Client &client,
-//     const std::vector<std::string> &params)
-// {
-//     PrivmsgCommandHandler handler(server, client);
-//     handler.execute(params);
-// }
+static void handlePrivmsg(
+    Server &server,
+    Client &client,
+    const std::vector<std::string> &params)
+{
+    PrivmsgCommandHandler handler(server, client);
+    handler.execute(params);
+}
 
 static void handleJoin(
     Server &server,
@@ -185,7 +185,7 @@ static std::map<std::string, HandlerExecutor> &getCommands()
         commands["PING"] = &handlePing;
         commands["CAP"] = &handleCap;
         // commands["QUIT"] = &handleQuit;
-        // commands["PRIVMSG"] = &handlePrivmsg;
+        commands["PRIVMSG"] = &handlePrivmsg;
         commands["JOIN"] = &handleJoin;
         commands["PART"] = &handlePart;
         commands["KICK"] = &handleKick;
