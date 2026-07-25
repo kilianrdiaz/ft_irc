@@ -3,7 +3,14 @@
 
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <ctime>
+
+#define COL_RESET  "\033[0m"
+#define COL_INFO   "\033[0;32m"
+#define COL_WARN   "\033[0;33m"
+#define COL_ERROR  "\033[0;31m"
+#define COL_EVENT  "\033[0;36m"
 
 /*
 ** ============================================================================
@@ -171,6 +178,49 @@ static inline void log(const std::string &message)
         << "]\033[0m "
         << message
         << std::endl;
+}
+
+enum LogLevel
+{
+    LOG_INFO,
+    LOG_WARN,
+    LOG_ERROR,
+    LOG_EVENT
+};
+
+template <typename T>
+std::string toStr(const T &value)
+{
+    std::ostringstream oss;
+    oss << value;
+    return oss.str();
+}
+
+static inline void log(LogLevel level, const std::string &message)
+{
+    time_t rawtime;
+    struct tm *timeinfo;
+    char buffer[80];
+
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+    strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
+
+    std::string color;
+    std::string tag;
+
+    switch (level)
+    {
+        case LOG_INFO:  color = "\033[0;32m"; tag = "INFO "; break;
+        case LOG_WARN:  color = "\033[0;33m"; tag = "WARN "; break;
+        case LOG_ERROR: color = "\033[0;31m"; tag = "ERROR"; break;
+        case LOG_EVENT: color = "\033[0;36m"; tag = "EVENT"; break;
+        default:        color = "\033[0m";    tag = "?????"; break;
+    }
+
+    std::cout << "\033[2;37m[" << buffer << "]\033[0m "
+               << color << "[" << tag << "]\033[0m "
+               << message << std::endl;
 }
 
 #endif

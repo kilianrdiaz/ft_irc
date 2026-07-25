@@ -19,7 +19,7 @@ Server::Server(int port, std::string password) : port(port), password(password),
 void Server::signalHandler(int signum)
 {
     (void)signum;
-    std::cout << std::endl << "Signal received" << std::endl;
+    std::cout << COL_WARN << "Signal received" << COL_RESET << std::endl;
     Server::sig = true;
 }
 
@@ -27,13 +27,16 @@ void Server::serverInit()
 {
     serSocket();
 
-    std::cout << "Server <" << serSocketFd << "> Connected" << std::endl;
-    std::cout << "Waiting to accept a connection...\n";
+    std::cout << COL_INFO << "Server <" << serSocketFd << "> Connected" << COL_RESET << std::endl;
+    std::cout << COL_INFO << "Waiting to accept a connection..." << COL_RESET << "\n";
 
     while (Server::sig == false)
     {
         if ((poll(&fds[0], fds.size(), -1) == -1) && Server::sig == false)
+        {
+            std::cout << COL_ERROR << "poll() failed" << COL_RESET << std::endl;
             throw(std::runtime_error("poll() failed"));
+        }
 
         for (size_t i = 0; i < fds.size(); i++)
         {
@@ -63,17 +66,32 @@ void Server::serSocket()
 
     serSocketFd = socket(AF_INET, SOCK_STREAM, 0);
     if (serSocketFd == -1)
+    {
+        std::cout << COL_ERROR << "failed to create socket" << COL_RESET << std::endl;
         throw(std::runtime_error("failed to create socket"));
+    }
 
     int en = 1;
-    if (setsockopt(serSocketFd, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) == -1) // configura opciones (SO_REUSEADDR → reusar puerto al reiniciar)
+    if (setsockopt(serSocketFd, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) == -1)
+    {
+        std::cout << COL_ERROR << "failed to set option (SO_REUSEADDR) on socket" << COL_RESET << std::endl;
         throw(std::runtime_error("failed to set option (SO_REUSEADDR) on socket"));
-    if (fcntl(serSocketFd, F_SETFL, O_NONBLOCK) == -1) // hace que el socket sea no-bloqueante
+    }
+    if (fcntl(serSocketFd, F_SETFL, O_NONBLOCK) == -1)
+    {
+        std::cout << COL_ERROR << "failed to set option (O_NONBLOCK) on socket" << COL_RESET << std::endl;
         throw(std::runtime_error("faild to set option (O_NONBLOCK) on socket"));
-    if (bind(serSocketFd, (struct sockaddr *)&address, sizeof(address)) == -1) // asocia el socket a IP + puerto
+    }
+    if (bind(serSocketFd, (struct sockaddr *)&address, sizeof(address)) == -1)
+    {
+        std::cout << COL_ERROR << "failed to bind socket" << COL_RESET << std::endl;
         throw(std::runtime_error("failed to bind socket"));
-    if (listen(serSocketFd, SOMAXCONN) == -1) // empieza a escuchar conexiones entrantes, hace que el socket sea pasivo
+    }
+    if (listen(serSocketFd, SOMAXCONN) == -1)
+    {
+        std::cout << COL_ERROR << "listen() failed" << COL_RESET << std::endl;
         throw(std::runtime_error("listen() failed"));
+    }
 
     newPoll.fd = serSocketFd;
     newPoll.events = POLLIN; // qué quieres vigilar (POLLIN = datos listos para leer)
@@ -88,17 +106,17 @@ void Server::acceptNewClient()
     struct pollfd newPoll;
     socklen_t len = sizeof(cliAddress);
 
-    int clifd = accept(serSocketFd, (sockaddr *)&cliAddress, &len); // aceptar al nuevo cliente, devuelve el nuevo socket del cliente
+    int clifd = accept(serSocketFd, (sockaddr *)&cliAddress, &len);
     if (clifd == -1)
     {
-        std::cout << "accept() failed" << std::endl;
+        std::cout << COL_ERROR << "accept() failed" << COL_RESET << std::endl;
         delete newClient;
         return;
     }
 
-    if (fcntl(clifd, F_SETFL, O_NONBLOCK) == -1) // hace que el nuevo socket sea no-bloqueante
+    if (fcntl(clifd, F_SETFL, O_NONBLOCK) == -1)
     {
-        std::cout << "fcntl() failed" << std::endl;
+        std::cout << COL_ERROR << "fcntl() failed" << COL_RESET << std::endl;
         delete newClient;
         close(clifd);
         return;
@@ -108,12 +126,12 @@ void Server::acceptNewClient()
     newPoll.events = POLLIN;
     newPoll.revents = 0;
 
-    newClient->setFd(clifd); // aplica el fd al cliente
-    newClient->setHostName(inet_ntoa(cliAddress.sin_addr)); // convierte la IP a string y la añade
-    clients[clifd] = newClient; // añade al nuevo cliente al map de clientes
-    fds.push_back(newPoll); // añade el nuevo socket al pollfd
+    newClient->setFd(clifd);
+    newClient->setHostName(inet_ntoa(cliAddress.sin_addr));
+    clients[clifd] = newClient;
+    fds.push_back(newPoll);
 
-    std::cout << "Client <" << clifd << "> Connected" << std::endl;
+    std::cout << COL_EVENT << "Client <" << clifd << "> Connected" << COL_RESET << std::endl;
 }
 
 void Server::receiveNewData(int fd)
@@ -121,11 +139,11 @@ void Server::receiveNewData(int fd)
     char buf[1024];
     memset(buf, 0, sizeof(buf));
 
-    ssize_t bytes = recv(fd, buf, sizeof(buf) - 1, 0); // recibe la data en buf
+    ssize_t bytes = recv(fd, buf, sizeof(buf) - 1, 0);
 
     if (bytes <= 0)
     {
-        std::cout << "Client <" << fd << "> Disconnected" << std::endl;
+        std::cout << COL_EVENT << "Client <" << fd << "> Disconnected" << COL_RESET << std::endl;
 
         Client *disconnectedClient = getClientByFd(fd);
         if (disconnectedClient != NULL)
@@ -135,29 +153,33 @@ void Server::receiveNewData(int fd)
         close(fd);
         return;
     }
-    
+
     buf[bytes] = '\0';
-    
+
     Client *client = getClientByFd(fd);
     if (client == NULL)
         return;
 
     std::string &buffer = client->getBuffer();
-    buffer.append(buf, bytes);  // acumula lo recibido en el buffer del cliente
+    buffer.append(buf, bytes);
 
     size_t pos;
     while ((pos = buffer.find('\n')) != std::string::npos)
     {
-        std::string line = buffer.substr(0, pos); // extrae una línea completa
-        buffer.erase(0, pos + 1); // la elimina del buffer, incluyendo el '\n'
+        std::string line = buffer.substr(0, pos);
+        buffer.erase(0, pos + 1);
 
-        if (!line.empty() && line[line.size() - 1] == '\r') // quita el '\r' si venía en formato \r\n
+        if (!line.empty() && line[line.size() - 1] == '\r')
             line.erase(line.size() - 1);
 
-        if (line.empty()) // ignora líneas vacías (p.ej. \r\n\r\n)
+        if (line.empty())
             continue;
 
         Command command = AbstractCommandHandler::parseLine(line);
+
+        std::cout << COL_EVENT << "Client <" << fd << "> (" << client->getNickname()
+                   << ") -> " << command.name << COL_RESET << std::endl;
+
         try
         {
             AbstractCommandHandler::executeCommand(*this, *client, command.name, command.params);
@@ -170,6 +192,8 @@ void Server::receiveNewData(int fd)
         }
         catch (const CommandException &e)
         {
+            std::cout << COL_WARN << "Client <" << fd << "> error on " << command.name
+                       << ": " << e.what() << COL_RESET << std::endl;
             this->replyToClient(fd, e.what());
             return;
         }
@@ -182,7 +206,7 @@ void Server::closeFds()
 
     while (it != clients.end())
     {
-        std::cout << "Client <" << it->first << "> Disconnected!" << std::endl;
+        std::cout << COL_EVENT << "Client <" << it->first << "> Disconnected!" << COL_RESET << std::endl;
         close(it->first);
         delete it->second;
         it++;
@@ -198,8 +222,8 @@ void Server::closeFds()
 
     if (serSocketFd != -1)
     {
-        std::cout << "Server <" << serSocketFd << "> Disconnected" << std::endl;
-		close(serSocketFd);
+        std::cout << COL_INFO << "Server <" << serSocketFd << "> Disconnected" << COL_RESET << std::endl;
+        close(serSocketFd);
     }
 }
 
@@ -213,6 +237,8 @@ void Server::tryRegisterClient(Client &client)
     if (client.getPassOk() && hasRealNickname && !client.getUsername().empty())
     {
         client.setRegistered(true);
+        std::cout << COL_EVENT << "Client <" << client.getFd() << "> registered as "
+                   << client.getNickname() << COL_RESET << std::endl;
         this->replyToClient(client.getFd(), RPL_WELCOME(client.getNickname()));
     }
 }
@@ -245,10 +271,9 @@ void Server::replyToClient(int fd, const std::string &message)
         client->write(message);
 }
 
-
 void Server::clearClient(int fd)
 {
-    for(size_t i = 0; i < fds.size(); i++)
+    for (size_t i = 0; i < fds.size(); i++)
     {
         if (fds[i].fd == fd)
         {
@@ -260,8 +285,8 @@ void Server::clearClient(int fd)
     std::map<int, Client*>::iterator it = clients.find(fd);
     if (it != clients.end())
     {
-        delete it->second; // liberar la memoria del cliente
-        clients.erase(it); // eliminar la entrada del map
+        delete it->second;
+        clients.erase(it);
     }
 }
 
