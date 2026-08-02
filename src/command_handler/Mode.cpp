@@ -35,13 +35,10 @@ void ModeCommandHandler::execute(const std::vector<std::string> &params)
     std::string channelName = params[0];
     std::string modeString = params[1];
 
-    std::map<std::string, Channel*> &channels = _server.getChannels();
-    std::map<std::string, Channel*>::iterator it = channels.find(channelName);
-
-    if (it == channels.end())
+    Channel *channel = _server.getChannelByName(channelName);
+    if (!channel)
         throw InvalidChannelException(_client.getNickname(), channelName);
 
-    Channel *channel = it->second;
 
     if (!channel->isMember(_client.getFd()))
         throw NotInChannelException(_client.getNickname(), channelName);
@@ -94,7 +91,7 @@ void ModeCommandHandler::execute(const std::vector<std::string> &params)
                     throw InvalidParametersException(_client.getNickname(), "MODE");
 
                 std::string targetNick = params[argIndex++];
-                int targetFd = this->findMemberFdByNickname(*channel, targetNick);
+                int targetFd = _server.searchNickname(targetNick) ? _server.searchNickname(targetNick)->getFd() : -1;
 
                 if (targetFd == -1)
                     throw ChannelException(ERR_USERNOTINCHANNEL(_client.getNickname(), targetNick, channelName));

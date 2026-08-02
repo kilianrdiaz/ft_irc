@@ -20,13 +20,10 @@ void KickChannelCommandHandler::execute(const std::vector<std::string> &params)
     std::string targetNick = params[1];
     std::string reason = (params.size() > 2) ? params[2] : "Kicked";
 
-    std::map<std::string, Channel*> &channels = _server.getChannels();
-    std::map<std::string, Channel*>::iterator it = channels.find(channelName);
+    Channel *channel = _server.getChannelByName(channelName);
 
-    if (it == channels.end())
+    if (!channel)
         throw InvalidChannelException(_client.getNickname(), channelName);
-
-    Channel *channel = it->second;
 
     if (!channel->isMember(_client.getFd()))
         throw NotInChannelException(_client.getNickname(), channelName);
@@ -34,7 +31,7 @@ void KickChannelCommandHandler::execute(const std::vector<std::string> &params)
     if (!channel->isOperator(_client.getFd()))
         throw NotPrivilegedException(_client.getNickname(), channelName);
 
-    int targetFd = this->findMemberFdByNickname(*channel, targetNick);
+    int targetFd = _server.searchNickname(targetNick) ? _server.searchNickname(targetNick)->getFd() : -1;
 
     if (targetFd == -1)
         throw ChannelException(ERR_USERNOTINCHANNEL(_client.getNickname(), targetNick, channelName));
@@ -46,7 +43,6 @@ void KickChannelCommandHandler::execute(const std::vector<std::string> &params)
 
     if (channel->memberCount() == 0)
     {
-        delete channel;
-        channels.erase(it);
+        _server.removeChannel(channelName);
     }
 }

@@ -1,6 +1,5 @@
 #include "Channel.hpp"
-
-#include "Channel.hpp"
+#include <sys/socket.h>
 
 Channel::Channel(const std::string &name, const std::string &key)
     : name(name), key(key), inviteOnly(false), topicRestricted(false), userLimit(0)
@@ -34,10 +33,7 @@ Channel::~Channel() {}
 
 void Channel::addMember(Client *client, bool asOperator)
 {
-    ChannelMember member;
-    member.client = client;
-    member.isOperator = asOperator;
-    members[client->getFd()] = member;
+    members[client->getFd()] = asOperator;
 }
 
 void Channel::removeMember(int fd)
@@ -52,17 +48,17 @@ bool Channel::isMember(int fd) const
 
 bool Channel::isOperator(int fd) const
 {
-    std::map<int, ChannelMember>::const_iterator it = members.find(fd);
+    std::map<int, bool>::const_iterator it = members.find(fd);
     if (it == members.end())
         return false;
-    return it->second.isOperator;
+    return it->second;
 }
 
 void Channel::setOperator(int fd, bool value)
 {
-    std::map<int, ChannelMember>::iterator it = members.find(fd);
+    std::map<int, bool>::iterator it = members.find(fd);
     if (it != members.end())
-        it->second.isOperator = value;
+        it->second = value;
 }
 
 size_t Channel::memberCount() const
@@ -70,7 +66,7 @@ size_t Channel::memberCount() const
     return members.size();
 }
 
-std::map<int, ChannelMember> &Channel::getMembers()
+std::map<int, bool> &Channel::getMembers()
 {
     return members;
 }
@@ -160,15 +156,38 @@ bool Channel::isFull() const
     return hasUserLimit() && memberCount() >= userLimit;
 }
 
-
-void Channel::broadcast(const std::string &message, int excludeFd)
+std::string Channel::getMemberList(const Server &server) const
 {
-    std::map<int, ChannelMember>::iterator it = members.begin();
+    std::string memberList;
 
-    while (it != members.end())
+    for (std::map<int, bool>::const_iterator it = members.begin();
+         it != members.end(); ++it)
     {
-        if (it->first != excludeFd)
-            it->second.client->write(message);
-        it++;
+        Client *client = const_cast<Server &>(server).getClientByFd(it->first);
+
+        if (!client)
+            continue;
+
+        if (!memberList.empty())
+            memberList += " ";
+
+        if (it->second)
+            memberList += "@";
+
+        memberList += client->getNickname();
+    }
+
+    return memberList;
+}
+
+void Channel::broadcast(const std::string &msg, int senderFd)
+{
+    for (std::map<int, bool>::iterator it = members.begin();
+         it != members.end(); ++it)
+    {
+        if (it->first == senderFd)
+            continue;
+
+        send(it->first, msg.c_str(), msg.size(), 0);
     }
 }

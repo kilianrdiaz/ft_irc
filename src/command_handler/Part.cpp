@@ -18,13 +18,10 @@ void PartChannelCommandHandler::execute(const std::vector<std::string> &params)
 
     std::string channelName = params[0];
 
-    std::map<std::string, Channel*> &channels = _server.getChannels();
-    std::map<std::string, Channel*>::iterator it = channels.find(channelName);
+    Channel *channel = _server.getChannelByName(channelName);
 
-    if (it == channels.end())
+    if (!channel)
         throw InvalidChannelException(_client.getNickname(), channelName);
-
-    Channel *channel = it->second;
 
     if (!channel->isMember(_client.getFd()))
         throw NotInChannelException(_client.getNickname(), channelName);
@@ -35,7 +32,6 @@ void PartChannelCommandHandler::execute(const std::vector<std::string> &params)
 
     if (channel->memberCount() == 0)
     {
-        delete channel;
-        channels.erase(it);
+        _server.removeChannel(channelName);
     }
 }

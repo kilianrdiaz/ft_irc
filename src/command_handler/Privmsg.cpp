@@ -21,13 +21,9 @@ void PrivmsgCommandHandler::execute(const std::vector<std::string> &params)
 
     if (!target.empty() && target[0] == '#')
     {
-        std::map<std::string, Channel*> &channels = _server.getChannels();
-        std::map<std::string, Channel*>::iterator it = channels.find(target);
-
-        if (it == channels.end())
+        Channel *channel = _server.getChannelByName(target);
+        if (!channel)
             throw InvalidChannelException(_client.getNickname(), target);
-
-        Channel *channel = it->second;
 
         if (!channel->isMember(_client.getFd()))
             throw CannotSendToChannelException(_client.getNickname(), target);

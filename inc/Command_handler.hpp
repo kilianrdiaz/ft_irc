@@ -221,11 +221,6 @@ class AChannelCommandHandler : public AbstractCommandHandler
             const std::string &channelList
         );
 
-        int findMemberFdByNickname(
-            Channel &channel,
-            const std::string &nickname
-        );
-
         void broadcast(
             Channel &channel,
             const std::string &message,
