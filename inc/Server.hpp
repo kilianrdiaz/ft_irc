@@ -1,56 +1,56 @@
 #pragma once
 
-#include <iostream>
-#include <vector>
-#include <map>
-#include <string>
-#include <poll.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include "Client.hpp"
 #include "Channel.hpp"
+#include "Client.hpp"
+#include <fcntl.h>
+#include <iostream>
+#include <map>
+#include <poll.h>
+#include <string>
+#include <unistd.h>
+#include <vector>
 
-class Client;
-class Channel;
+class	Client;
+class	Channel;
 
 class Server
 {
-    private:
-        int port;
-        std::string password;
-        int serSocketFd;
-        static bool sig;
+  private:
+	int port;
+	std::string password;
+	int serSocketFd;
+	static bool sig;
 
-        std::map<int, Client*> clients;
-        std::vector<struct pollfd> fds;
-        std::map<std::string, Channel*> channels;
+	std::map<int, Client *> clients;
+	std::vector<struct pollfd> fds;
+	std::map<std::string, Channel *> channels;
 
-        public:
-        Server(int port, std::string password);
-        Server(const Server &other);
-        Server &operator=(const Server &other);
-        ~Server();
-        
-        void serverInit();
-        void serSocket();
-        void acceptNewClient();
-        void receiveNewData(int fd);
-        void replyToClient(int fd, const std::string &message);
-        void tryRegisterClient(Client &client);
-        Client *searchNickname(const std::string &nickname, int excludeFd = -1);
-        std::string getPassword() const { return password; }
-        std::map<int, Client*> getClients();
-        std::map<std::string, Channel*> getChannels();
-        Channel *getChannelByName(const std::string &channelName);
-        void addChannel(Channel *channel);
-        void removeChannel(const std::string &channelName);
+  public:
+	Server(int port, std::string password);
+	Server(const Server &other);
+	Server &operator=(const Server &other);
+	~Server();
 
-        Client *getClientByFd(int fd);
+	void serverInit();
+	void serSocket();
+	void acceptNewClient();
+	void receiveNewData(int fd);
+	void replyToClient(int fd, const std::string &message);
+	void tryRegisterClient(Client &client);
+	Client *searchNickname(const std::string &nickname, int excludeFd = -1);
+	std::string getPassword() const;
+	std::map<int, Client *> getClients();
+	std::map<std::string, Channel *> getChannels();
+	Channel *getChannelByName(const std::string &channelName);
+	void addChannel(Channel *channel);
+	void removeChannel(const std::string &channelName);
 
-        static void signalHandler(int signum);
+	Client *getClientByFd(int fd);
 
-        void clearClient(int fd);
+	static void signalHandler(int signum);
 
-        void removeClientFromChannels(Client &client, const std::string &message);
-        void disconnectClient(Client &client, const std::string &reason);
+	void clearClient(int fd);
+
+	void removeClientFromChannels(Client &client, const std::string &message);
+	void disconnectClient(Client &client, const std::string &reason);
 };

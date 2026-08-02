@@ -10,12 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #ifndef COMMAND_EXCEPTS_HPP
-#define COMMAND_EXCEPTS_HPP
+# define COMMAND_EXCEPTS_HPP
 
-#include <exception>
-#include <string>
+# include <exception>
+# include <string>
 
 /*
  * ========================================================================== *
@@ -25,16 +24,15 @@
 
 class CommandException : public std::exception
 {
-    protected:
-        std::string _message;
+  protected:
+	std::string _message;
 
-    public:
-        CommandException(const std::string &message);
-        virtual ~CommandException() throw();
+  public:
+	CommandException(const std::string &message);
+	virtual ~CommandException() throw();
 
-        virtual const char *what() const throw();
+	virtual const char *what() const throw();
 };
-
 
 /*
  * Generic command exceptions
@@ -42,38 +40,29 @@ class CommandException : public std::exception
 
 class CommandNotFoundException : public CommandException
 {
-    public:
-        CommandNotFoundException(
-            const std::string &nickname,
-            const std::string &command
-        );
+  public:
+	CommandNotFoundException(const std::string &nickname,
+		const std::string &command);
 };
 
 class InvalidParametersException : public CommandException
 {
-    public:
-        InvalidParametersException(
-            const std::string &nickname,
-            const std::string &command
-        );
+  public:
+	InvalidParametersException(const std::string &nickname,
+		const std::string &command);
 };
 
 class AlreadyRegisteredException : public CommandException
 {
-    public:
-        AlreadyRegisteredException(
-            const std::string &nickname
-        );
+  public:
+	AlreadyRegisteredException(const std::string &nickname);
 };
 
 class NotRegisteredException : public CommandException
 {
-    public:
-        NotRegisteredException(
-            const std::string &nickname
-        );
+  public:
+	NotRegisteredException(const std::string &nickname);
 };
-
 
 /*
  * PASS exceptions
@@ -81,18 +70,14 @@ class NotRegisteredException : public CommandException
 
 class AlreadyPassedException : public CommandException
 {
-    public:
-        AlreadyPassedException(
-            const std::string &nickname
-        );
+  public:
+	AlreadyPassedException(const std::string &nickname);
 };
 
 class InvalidPasswordException : public CommandException
 {
-    public:
-        InvalidPasswordException(
-            const std::string &nickname
-        );
+  public:
+	InvalidPasswordException(const std::string &nickname);
 };
 
 /*
@@ -101,30 +86,22 @@ class InvalidPasswordException : public CommandException
 
 class InvalidNicknameException : public CommandException
 {
-    public:
-        InvalidNicknameException(
-            const std::string &nickname
-        );
+  public:
+	InvalidNicknameException(const std::string &nickname);
 };
 
 class AlreadyExistNicknameException : public CommandException
 {
-    public:
-        AlreadyExistNicknameException(
-            const std::string &nickname,
-            const std::string &used_nickname
-        );
+  public:
+	AlreadyExistNicknameException(const std::string &nickname,
+		const std::string &used_nickname);
 };
 
 class NoSuchNickException : public CommandException
 {
-    public:
-        NoSuchNickException(
-            const std::string &nickname,
-            const std::string &target
-        );
+  public:
+	NoSuchNickException(const std::string &nickname, const std::string &target);
 };
-
 
 /*
  * PING exceptions
@@ -132,12 +109,9 @@ class NoSuchNickException : public CommandException
 
 class InvalidPingException : public CommandException
 {
-    public:
-        InvalidPingException(
-            const std::string &nickname
-        );
+  public:
+	InvalidPingException(const std::string &nickname);
 };
-
 
 /*
  * Channel exceptions
@@ -145,82 +119,64 @@ class InvalidPingException : public CommandException
 
 class ChannelException : public CommandException
 {
-    public:
-        ChannelException(
-            const std::string &message
-        );
+  public:
+	ChannelException(const std::string &message);
 };
 
 class NoSuchChannelException : public ChannelException
 {
-    public:
-        NoSuchChannelException(
-            const std::string &nickname,
-            const std::string &channel
-        );
+  public:
+	NoSuchChannelException(const std::string &nickname,
+		const std::string &channel);
 };
 
 class InvalidChannelException : public ChannelException
 {
-    public:
-        InvalidChannelException(
-            const std::string &nickname,
-            const std::string &channel
-        );
+  public:
+	InvalidChannelException(const std::string &nickname,
+		const std::string &channel);
 };
 
 class NotPrivilegedException : public ChannelException
 {
-    public:
-        NotPrivilegedException(
-            const std::string &nickname,
-            const std::string &channel
-        );
+  public:
+	NotPrivilegedException(const std::string &nickname,
+		const std::string &channel);
 };
 
 class AlreadyInChannelException : public ChannelException
 {
-    public:
-        AlreadyInChannelException(
-            const std::string &nickname,
-            const std::string &channel
-        );
+  public:
+	AlreadyInChannelException(const std::string &nickname,
+		const std::string &channel);
 };
 
 class NotInChannelException : public ChannelException
 {
-    public:
-        NotInChannelException(
-            const std::string &nickname,
-            const std::string &channel
-        );
+  public:
+	NotInChannelException(const std::string &nickname,
+		const std::string &channel);
 };
 
 class InviteOnlyChannelException : public ChannelException
 {
-    public:
-        InviteOnlyChannelException(
-            const std::string &nickname,
-            const std::string &channel
-        );
+  public:
+	InviteOnlyChannelException(const std::string &nickname,
+		const std::string &channel);
 };
 
 class BadChannelKeyException : public ChannelException
 {
-    public:
-        BadChannelKeyException(
-            const std::string &nickname,
-            const std::string &channel
-        );
+  public:
+	BadChannelKeyException(const std::string &nickname,
+		const std::string &channel);
 };
 
 class ChannelFullException : public ChannelException
 {
-    public:
-        ChannelFullException(
-            const std::string &nickname,
-            const std::string &channel
-        );
+  public:
+	ChannelFullException(const std::string &nickname,
+		const std::string &channel);
 };
 
 /*
@@ -229,11 +185,8 @@ class ChannelFullException : public ChannelException
 
 class InvalidModeException : public CommandException
 {
-    public:
-        InvalidModeException(
-            const std::string &nickname,
-            const std::string &mode
-        );
+  public:
+	InvalidModeException(const std::string &nickname, const std::string &mode);
 };
 
 /*
@@ -242,11 +195,9 @@ class InvalidModeException : public CommandException
 
 class CannotSendToChannelException : public ChannelException
 {
-    public:
-        CannotSendToChannelException(
-            const std::string &nickname,
-            const std::string &channel
-        );
+  public:
+	CannotSendToChannelException(const std::string &nickname,
+		const std::string &channel);
 };
 
 /*
@@ -255,8 +206,8 @@ class CannotSendToChannelException : public ChannelException
 
 class QuitException : public std::exception
 {
-    public:
-        virtual ~QuitException() throw();
+  public:
+	virtual ~QuitException() throw();
 };
 
 #endif

@@ -288,6 +288,11 @@ void Server::replyToClient(int fd, const std::string &message)
         client->write(message);
 }
 
+std::string Server::getPassword() const
+{
+    return password;
+}
+
 std::map<int, Client*> Server::getClients()
 {
     return clients;

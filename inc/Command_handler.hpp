@@ -11,71 +11,51 @@
 /* ************************************************************************** */
 
 #ifndef COMMAND_HANDLER_HPP
-#define COMMAND_HANDLER_HPP
+# define COMMAND_HANDLER_HPP
 
-#include <exception>
-#include <string>
-#include <vector>
+# include "Client.hpp"
+# include "Server.hpp"
+# include "command_excepts.hpp"
+# include <exception>
+# include <string>
+# include <vector>
 
-#include "Client.hpp"
-#include "Server.hpp"
-#include "command_excepts.hpp"
+typedef void	(*HandlerExecutor)(Server &, Client &,
+		const std::vector<std::string> &);
 
-typedef void (*HandlerExecutor)(
-    Server &,
-    Client &,
-    const std::vector<std::string> &
-);
-
-struct Command
+struct			Command
 {
-    std::string name;
-    std::vector<std::string> params;
+	std::string name;
+	std::vector<std::string> params;
 };
 
 class AbstractCommandHandler
 {
-    private:
-        AbstractCommandHandler(
-            const AbstractCommandHandler &
-        );
+  private:
+	AbstractCommandHandler(const AbstractCommandHandler &);
 
-        AbstractCommandHandler &operator=(
-            const AbstractCommandHandler &
-        );
+	AbstractCommandHandler &operator=(const AbstractCommandHandler &);
 
-    protected:
-        Server &_server;
-        Client &_client;
+  protected:
+	Server &_server;
+	Client &_client;
 
-    public:
-        AbstractCommandHandler(
-            Server &server,
-            Client &client
-        );
+  public:
+	AbstractCommandHandler(Server &server, Client &client);
 
-        virtual ~AbstractCommandHandler();
+	virtual ~AbstractCommandHandler();
 
-        void setCommandName(
-            const std::string commandName
-        );
+	void setCommandName(const std::string commandName);
 
-        const std::string &getCommandName() const;
+	const std::string &getCommandName() const;
 
-        static Command parseLine(const std::string &line);
+	static Command parseLine(const std::string &line);
 
-        static void executeCommand(
-            Server &server,
-            Client &client,
-            const std::string commandName,
-            const std::vector<std::string> &params
-        );
+	static void executeCommand(Server &server, Client &client,
+		const std::string commandName, const std::vector<std::string> &params);
 
-        virtual void execute(
-            const std::vector<std::string> &params
-        ) = 0;
+	virtual void execute(const std::vector<std::string> &params) = 0;
 };
-
 
 /*
  * ========================================================================== *
@@ -85,19 +65,13 @@ class AbstractCommandHandler
 
 class PassCommandHandler : public AbstractCommandHandler
 {
-    public:
-        PassCommandHandler(
-            Server &server,
-            Client &client
-        );
+  public:
+	PassCommandHandler(Server &server, Client &client);
 
-        virtual ~PassCommandHandler();
+	~PassCommandHandler();
 
-        virtual void execute(
-            const std::vector<std::string> &params
-        );
+	void execute(const std::vector<std::string> &params);
 };
-
 
 /*
  * ========================================================================== *
@@ -107,19 +81,13 @@ class PassCommandHandler : public AbstractCommandHandler
 
 class UserCommandHandler : public AbstractCommandHandler
 {
-    public:
-        UserCommandHandler(
-            Server &server,
-            Client &client
-        );
+  public:
+	UserCommandHandler(Server &server, Client &client);
 
-        virtual ~UserCommandHandler();
+	~UserCommandHandler();
 
-        virtual void execute(
-            const std::vector<std::string> &params
-        );
+	void execute(const std::vector<std::string> &params);
 };
-
 
 /*
  * ========================================================================== *
@@ -129,17 +97,12 @@ class UserCommandHandler : public AbstractCommandHandler
 
 class NickCommandHandler : public AbstractCommandHandler
 {
-    public:
-        NickCommandHandler(
-            Server &server,
-            Client &client
-        );
+  public:
+	NickCommandHandler(Server &server, Client &client);
 
-        virtual ~NickCommandHandler();
+	~NickCommandHandler();
 
-        virtual void execute(
-            const std::vector<std::string> &params
-        );
+	void execute(const std::vector<std::string> &params);
 };
 
 /*
@@ -150,17 +113,12 @@ class NickCommandHandler : public AbstractCommandHandler
 
 class CapCommandHandler : public AbstractCommandHandler
 {
-    public:
-        CapCommandHandler(
-            Server &server,
-            Client &client
-        );
+  public:
+	CapCommandHandler(Server &server, Client &client);
 
-        virtual ~CapCommandHandler();
+	~CapCommandHandler();
 
-        virtual void execute(
-            const std::vector<std::string> &params
-        );
+	void execute(const std::vector<std::string> &params);
 };
 
 /*
@@ -171,19 +129,13 @@ class CapCommandHandler : public AbstractCommandHandler
 
 class PingCommandHandler : public AbstractCommandHandler
 {
-    public:
-        PingCommandHandler(
-            Server &server,
-            Client &client
-        );
+  public:
+	PingCommandHandler(Server &server, Client &client);
 
-        virtual ~PingCommandHandler();
+	~PingCommandHandler();
 
-        virtual void execute(
-            const std::vector<std::string> &params
-        );
+	void execute(const std::vector<std::string> &params);
 };
-
 
 /*
  * ========================================================================== *
@@ -193,20 +145,13 @@ class PingCommandHandler : public AbstractCommandHandler
 
 class QuitCommandHandler : public AbstractCommandHandler
 {
-    public:
-        QuitCommandHandler(
-            Server &server,
-            Client &client
-        );
+  public:
+	QuitCommandHandler(Server &server, Client &client);
 
-        virtual ~QuitCommandHandler();
+	~QuitCommandHandler();
 
-        virtual void execute(
-            const std::vector<std::string> &params
-        );
+	void execute(const std::vector<std::string> &params);
 };
-
-
 
 /*
  * ========================================================================== *
@@ -216,29 +161,18 @@ class QuitCommandHandler : public AbstractCommandHandler
 
 class AChannelCommandHandler : public AbstractCommandHandler
 {
-    protected:
-        std::vector<std::string> parseChannelList(
-            const std::string &channelList
-        );
+  protected:
+	std::vector<std::string> parseChannelList(const std::string &channelList);
 
-        void broadcast(
-            Channel &channel,
-            const std::string &message,
-            int excludeFd = -1
-        );
+	void broadcast(Channel &channel, const std::string &message, int excludeFd =
+		-1);
 
-    public:
-        AChannelCommandHandler(
-            Server &server,
-            Client &client
-        );
-        virtual ~AChannelCommandHandler();
+  public:
+	AChannelCommandHandler(Server &server, Client &client);
+	virtual ~AChannelCommandHandler();
 
-        virtual void execute(
-            const std::vector<std::string> &params
-        ) = 0;
+	virtual void execute(const std::vector<std::string> &params) = 0;
 };
-
 
 /*
  * ========================================================================== *
@@ -248,19 +182,13 @@ class AChannelCommandHandler : public AbstractCommandHandler
 
 class JoinChannelCommandHandler : public AChannelCommandHandler
 {
-    public:
-        JoinChannelCommandHandler(
-            Server &server,
-            Client &client
-        );
+  public:
+	JoinChannelCommandHandler(Server &server, Client &client);
 
-        virtual ~JoinChannelCommandHandler();
+	~JoinChannelCommandHandler();
 
-        virtual void execute(
-            const std::vector<std::string> &params
-        );
+	void execute(const std::vector<std::string> &params);
 };
-
 
 /*
  * ========================================================================== *
@@ -270,19 +198,13 @@ class JoinChannelCommandHandler : public AChannelCommandHandler
 
 class PartChannelCommandHandler : public AChannelCommandHandler
 {
-    public:
-        PartChannelCommandHandler(
-            Server &server,
-            Client &client
-        );
+  public:
+	PartChannelCommandHandler(Server &server, Client &client);
 
-        virtual ~PartChannelCommandHandler();
+	~PartChannelCommandHandler();
 
-        virtual void execute(
-            const std::vector<std::string> &params
-        );
+	void execute(const std::vector<std::string> &params);
 };
-
 
 /*
  * ========================================================================== *
@@ -292,19 +214,13 @@ class PartChannelCommandHandler : public AChannelCommandHandler
 
 class KickChannelCommandHandler : public AChannelCommandHandler
 {
-    public:
-        KickChannelCommandHandler(
-            Server &server,
-            Client &client
-        );
+  public:
+	KickChannelCommandHandler(Server &server, Client &client);
 
-        virtual ~KickChannelCommandHandler();
+	~KickChannelCommandHandler();
 
-        virtual void execute(
-            const std::vector<std::string> &params
-        );
+	void execute(const std::vector<std::string> &params);
 };
-
 
 /*
  * ========================================================================== *
@@ -314,19 +230,13 @@ class KickChannelCommandHandler : public AChannelCommandHandler
 
 class TopicCommandHandler : public AChannelCommandHandler
 {
-    public:
-        TopicCommandHandler(
-            Server &server,
-            Client &client
-        );
+  public:
+	TopicCommandHandler(Server &server, Client &client);
 
-        virtual ~TopicCommandHandler();
+	~TopicCommandHandler();
 
-        virtual void execute(
-            const std::vector<std::string> &params
-        );
+	void execute(const std::vector<std::string> &params);
 };
-
 
 /*
  * ========================================================================== *
@@ -336,17 +246,12 @@ class TopicCommandHandler : public AChannelCommandHandler
 
 class ModeCommandHandler : public AChannelCommandHandler
 {
-    public:
-        ModeCommandHandler(
-            Server &server,
-            Client &client
-        );
+  public:
+	ModeCommandHandler(Server &server, Client &client);
 
-        virtual ~ModeCommandHandler();
+	~ModeCommandHandler();
 
-        virtual void execute(
-            const std::vector<std::string> &params
-        );
+	void execute(const std::vector<std::string> &params);
 };
 
 /*
@@ -357,20 +262,15 @@ class ModeCommandHandler : public AChannelCommandHandler
 
 class InviteCommandHandler : public AChannelCommandHandler
 {
-    public:
-        InviteCommandHandler(
-            Server &server,
-            Client &client
-        );
+  public:
+	InviteCommandHandler(Server &server, Client &client);
 
-        virtual ~InviteCommandHandler();
+	~InviteCommandHandler();
 
-        virtual void execute(
-            const std::vector<std::string> &params
-        );
+	void execute(const std::vector<std::string> &params);
 };
 
-/*
+/*`
  * ========================================================================== *
  * PRIVMSG
  * ========================================================================== *
@@ -378,16 +278,11 @@ class InviteCommandHandler : public AChannelCommandHandler
 
 class PrivmsgCommandHandler : public AChannelCommandHandler
 {
-    public:
-        PrivmsgCommandHandler(
-            Server &server,
-            Client &client
-        );
+  public:
+	PrivmsgCommandHandler(Server &server, Client &client);
 
-        virtual ~PrivmsgCommandHandler();
+	~PrivmsgCommandHandler();
 
-        virtual void execute(
-            const std::vector<std::string> &params
-        );
+	void execute(const std::vector<std::string> &params);
 };
 #endif
