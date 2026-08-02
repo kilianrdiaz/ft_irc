@@ -16,6 +16,51 @@ bool Server::sig = false;
 
 Server::Server(int port, std::string password) : port(port), password(password), serSocketFd(-1) {}
 
+Server::Server(const Server &other)
+    : port(other.port), password(other.password), serSocketFd(other.serSocketFd),
+      clients(other.clients), fds(other.fds), channels(other.channels) {}
+
+Server &Server::operator=(const Server &other)
+{
+    if (this != &other)
+    {
+        port = other.port;
+        password = other.password;
+        serSocketFd = other.serSocketFd;
+        clients = other.clients;
+        fds = other.fds;
+        channels = other.channels;
+    }
+    return *this;
+}
+
+Server::~Server()
+{
+    std::map<int, Client*>::iterator it = clients.begin();
+
+    while (it != clients.end())
+    {
+        std::cout << COL_EVENT << "Client <" << it->first << "> Disconnected!" << COL_RESET << std::endl;
+        close(it->first);
+        delete it->second;
+        it++;
+    }
+
+    std::map<std::string, Channel*>::iterator cit = channels.begin();
+
+    while (cit != channels.end())
+    {
+        delete cit->second;
+        cit++;
+    }
+
+    if (serSocketFd != -1)
+    {
+        std::cout << COL_INFO << "Server <" << serSocketFd << "> Disconnected" << COL_RESET << std::endl;
+        close(serSocketFd);
+    }
+}
+
 void Server::signalHandler(int signum)
 {
     (void)signum;
@@ -52,7 +97,6 @@ void Server::serverInit()
             }
         }
     }
-    closeFds();
 }
 
 void Server::serSocket()
@@ -200,33 +244,6 @@ void Server::receiveNewData(int fd)
     }
 }
 
-void Server::closeFds()
-{
-    std::map<int, Client*>::iterator it = clients.begin();
-
-    while (it != clients.end())
-    {
-        std::cout << COL_EVENT << "Client <" << it->first << "> Disconnected!" << COL_RESET << std::endl;
-        close(it->first);
-        delete it->second;
-        it++;
-    }
-
-    std::map<std::string, Channel*>::iterator cit = channels.begin();
-
-    while (cit != channels.end())
-    {
-        delete cit->second;
-        cit++;
-    }
-
-    if (serSocketFd != -1)
-    {
-        std::cout << COL_INFO << "Server <" << serSocketFd << "> Disconnected" << COL_RESET << std::endl;
-        close(serSocketFd);
-    }
-}
-
 void Server::tryRegisterClient(Client &client)
 {
     if (client.getRegistered())
@@ -269,6 +286,39 @@ void Server::replyToClient(int fd, const std::string &message)
     Client *client = getClientByFd(fd);
     if (client != NULL)
         client->write(message);
+}
+
+std::map<int, Client*> Server::getClients()
+{
+    return clients;
+}
+
+std::map<std::string, Channel*> Server::getChannels()
+{
+    return channels;
+}
+
+Channel *Server::getChannelByName(const std::string &channelName)
+{
+    std::map<std::string, Channel*>::iterator it = channels.find(channelName);
+    if (it == channels.end())
+        return NULL;
+    return it->second;
+}
+
+void Server::addChannel(Channel *channel)
+{
+    channels[channel->getName()] = channel;
+}
+
+void Server::removeChannel(const std::string &channelName)
+{
+    std::map<std::string, Channel*>::iterator it = channels.find(channelName);
+    if (it != channels.end())
+    {
+        delete it->second;
+        channels.erase(it);
+    }
 }
 
 void Server::clearClient(int fd)

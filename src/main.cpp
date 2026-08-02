@@ -63,7 +63,6 @@ int main(int argc, char **argv)
     }
     catch (const std::exception &e)
     {
-        ser.closeFds();
         std::cerr << e.what() << std::endl;
     }
 

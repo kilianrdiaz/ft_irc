@@ -10,6 +10,9 @@
 #include "Client.hpp"
 #include "Channel.hpp"
 
+class Client;
+class Channel;
+
 class Server
 {
     private:
@@ -24,6 +27,9 @@ class Server
 
         public:
         Server(int port, std::string password);
+        Server(const Server &other);
+        Server &operator=(const Server &other);
+        ~Server();
         
         void serverInit();
         void serSocket();
@@ -33,14 +39,16 @@ class Server
         void tryRegisterClient(Client &client);
         Client *searchNickname(const std::string &nickname, int excludeFd = -1);
         std::string getPassword() const { return password; }
-        std::map<int, Client*> &getClients() { return clients; }
-        std::map<std::string, Channel*> &getChannels() { return channels; }
+        std::map<int, Client*> getClients();
+        std::map<std::string, Channel*> getChannels();
+        Channel *getChannelByName(const std::string &channelName);
+        void addChannel(Channel *channel);
+        void removeChannel(const std::string &channelName);
 
         Client *getClientByFd(int fd);
 
         static void signalHandler(int signum);
 
-        void closeFds();
         void clearClient(int fd);
 
         void removeClientFromChannels(Client &client, const std::string &message);

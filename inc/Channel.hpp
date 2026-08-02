@@ -5,12 +5,9 @@
 #include <map>
 #include <set>
 #include "Client.hpp"
+#include "Server.hpp"
 
-struct ChannelMember
-{
-    Client *client;
-    bool isOperator;
-};
+class Server;
 
 class Channel
 {
@@ -22,7 +19,7 @@ class Channel
         bool topicRestricted;
         size_t userLimit;
 
-        std::map<int, ChannelMember> members;
+        std::map<int, bool> members;
         std::set<int> invited;
 
     public:
@@ -38,7 +35,7 @@ class Channel
         bool isOperator(int fd) const;
         void setOperator(int fd, bool value);
         size_t memberCount() const;
-        std::map<int, ChannelMember> &getMembers();
+        std::map<int, bool> &getMembers();
 
         // Invitaciones
         void invite(int fd);
@@ -57,6 +54,7 @@ class Channel
         void setTopicRestricted(bool value);
 
         std::string getKey() const;
+        std::string getMemberList(const Server &server) const;
         void setKey(const std::string &newKey);
         bool hasKey() const;
 
