@@ -48,6 +48,9 @@ fclean: clean
 
 re: fclean all
 
+valgrind: 
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4343 "123"
+
 -include $(DEPS)
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re valgrind
