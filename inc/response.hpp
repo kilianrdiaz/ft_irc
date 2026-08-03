@@ -149,6 +149,9 @@
 #define MSG_TOPIC(prefix, channel, topic) \
     std::string(":") + prefix + " TOPIC " + channel + " :" + topic
 
+#define MSG_LIST(prefix, channels) \
+    std::string(":") + prefix + " LIST " + channels
+
 
 /*
 ** ============================================================================

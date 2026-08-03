@@ -225,13 +225,3 @@ InvalidModeException::InvalidModeException(
         ERR_UNKNOWNMODE(nickname, mode))
 {
 }
-
-/*
-** ============================================================================
-** QUIT Exceptions
-** ============================================================================
-*/
-
-QuitException::~QuitException() throw()
-{
-}

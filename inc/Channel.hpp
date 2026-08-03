@@ -1,3 +1,5 @@
+
+
 #pragma once
 
 #include "Client.hpp"
@@ -33,6 +35,7 @@ class Channel
 	void removeMember(int fd);
 	bool isMember(int fd) const;
 	bool isOperator(int fd) const;
+	int countOperators() const;
 	void setOperator(int fd, bool value);
 	size_t memberCount() const;
 	std::map<int, bool> &getMembers();
@@ -63,5 +66,5 @@ class Channel
 	bool hasUserLimit() const;
 	bool isFull() const;
 
-	void broadcast(const std::string &message, int excludeFd = -1);
+	void broadcast(const std::string &message, int senderFd, const Server &server) const;
 };

@@ -31,6 +31,15 @@ Channel &Channel::operator=(const Channel &other)
 
 Channel::~Channel() {}
 
+int Channel::countOperators() const
+{
+    int count = 0;
+    for (std::map<int, bool>::const_iterator it = members.begin(); it != members.end(); ++it)
+        if (it->second)
+            count++;
+    return count;
+}
+
 void Channel::addMember(Client *client, bool asOperator)
 {
     members[client->getFd()] = asOperator;
@@ -39,6 +48,8 @@ void Channel::addMember(Client *client, bool asOperator)
 void Channel::removeMember(int fd)
 {
     members.erase(fd);
+    if (this->memberCount() > 0 && countOperators() == 0)
+        members.begin()->second = true;
 }
 
 bool Channel::isMember(int fd) const
@@ -180,14 +191,14 @@ std::string Channel::getMemberList(const Server &server) const
     return memberList;
 }
 
-void Channel::broadcast(const std::string &msg, int senderFd)
+void Channel::broadcast(const std::string &msg, int senderFd, const Server &server) const
 {
-    for (std::map<int, bool>::iterator it = members.begin();
+    for (std::map<int, bool>::const_iterator it = members.begin();
          it != members.end(); ++it)
     {
         if (it->first == senderFd)
             continue;
 
-        send(it->first, msg.c_str(), msg.size(), 0);
+        const_cast<Server &>(server).replyToClient(it->first, msg);
     }
 }

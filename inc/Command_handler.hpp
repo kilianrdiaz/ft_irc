@@ -164,15 +164,28 @@ class AChannelCommandHandler : public AbstractCommandHandler
   protected:
 	std::vector<std::string> parseChannelList(const std::string &channelList);
 
-	void broadcast(Channel &channel, const std::string &message, int excludeFd =
-		-1);
-
   public:
 	AChannelCommandHandler(Server &server, Client &client);
 	virtual ~AChannelCommandHandler();
 
 	virtual void execute(const std::vector<std::string> &params) = 0;
 };
+
+/*
+ * ========================================================================== *
+ * LIST CHANNEL
+ * ========================================================================== *
+ */
+
+ class ListChannelCommandHandler : public AChannelCommandHandler
+ {
+   public:
+	ListChannelCommandHandler(Server &server, Client &client);
+
+	~ListChannelCommandHandler();
+
+	void execute(const std::vector<std::string> &params);
+ };
 
 /*
  * ========================================================================== *
