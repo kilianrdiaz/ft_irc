@@ -64,6 +64,7 @@ void JoinChannelCommandHandler::execute(const std::vector<std::string> &params)
                 RPL_NAMREPLY(_client.getNickname(), currentChannelName, channel->getMemberList(_server)));
             _server.replyToClient(_client.getFd(),
                 RPL_ENDOFNAMES(_client.getNickname(), currentChannelName));
+            channel->broadcast(MSG_JOIN(_client.getNickname(), currentChannelName), _client.getFd(), _server);
         }
         catch (CommandException &e)
         {

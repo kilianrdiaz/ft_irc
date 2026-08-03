@@ -25,13 +25,10 @@ void PartChannelCommandHandler::execute(const std::vector<std::string> &params)
 
     if (!channel->isMember(_client.getFd()))
         throw NotInChannelException(_client.getNickname(), channelName);
-
-    channel->removeMember(_client.getFd());
     std::string reason = params.size() > 1 ? params[1] : "";
-    _client.write(MSG_PART(_client.getNickname(), channelName, reason));
-
+    channel->broadcast(MSG_PART(_client.getNickname(), channelName, reason), _client.getFd(), _server);
+    channel->removeMember(_client.getFd());
     if (channel->memberCount() == 0)
-    {
         _server.removeChannel(channelName);
-    }
+    _client.write(MSG_PART(_client.getNickname(), channelName, reason));
 }

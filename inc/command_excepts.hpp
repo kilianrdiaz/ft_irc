@@ -200,14 +200,4 @@ class CannotSendToChannelException : public ChannelException
 		const std::string &channel);
 };
 
-/*
- * QUIT exceptions
- */
-
-class QuitException : public std::exception
-{
-  public:
-	virtual ~QuitException() throw();
-};
-
 #endif

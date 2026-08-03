@@ -39,11 +39,3 @@ std::vector<std::string> AChannelCommandHandler::parseChannelList(
 
     return channels;
 }
-
-void AChannelCommandHandler::broadcast(
-    Channel &channel,
-    const std::string &message,
-    int excludeFd)
-{
-    channel.broadcast(message, excludeFd);
-}

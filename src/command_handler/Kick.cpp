@@ -38,11 +38,8 @@ void KickChannelCommandHandler::execute(const std::vector<std::string> &params)
 
     std::string kickMsg = MSG_KICK(_client.getNickname(), channelName, targetNick, reason);
 
-    this->broadcast(*channel, kickMsg); // avisa a todos, incluida la víctima (aún es miembro en este punto)
+    channel->broadcast(kickMsg, _client.getFd(), _server);
     channel->removeMember(targetFd);
-
     if (channel->memberCount() == 0)
-    {
         _server.removeChannel(channelName);
-    }
 }

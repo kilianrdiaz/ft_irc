@@ -28,7 +28,7 @@ void PrivmsgCommandHandler::execute(const std::vector<std::string> &params)
         if (!channel->isMember(_client.getFd()))
             throw CannotSendToChannelException(_client.getNickname(), target);
 
-        this->broadcast(*channel, MSG_PRIVMSG(_client.get_prefix(), target, message), _client.getFd());
+        channel->broadcast(MSG_PRIVMSG(_client.get_prefix(), target, message), _client.getFd(), _server);
     }
     else
     {

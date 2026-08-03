@@ -188,13 +188,7 @@ void Server::receiveNewData(int fd)
     if (bytes <= 0)
     {
         std::cout << COL_EVENT << "Client <" << fd << "> Disconnected" << COL_RESET << std::endl;
-
-        Client *disconnectedClient = getClientByFd(fd);
-        if (disconnectedClient != NULL)
-            disconnectClient(*disconnectedClient, "Connection closed");
-
         clearClient(fd);
-        close(fd);
         return;
     }
 
@@ -227,12 +221,6 @@ void Server::receiveNewData(int fd)
         try
         {
             AbstractCommandHandler::executeCommand(*this, *client, command.name, command.params);
-        }
-        catch (const QuitException &e)
-        {
-            clearClient(fd);
-            close(fd);
-            return;
         }
         catch (const CommandException &e)
         {
@@ -328,6 +316,7 @@ void Server::removeChannel(const std::string &channelName)
 
 void Server::clearClient(int fd)
 {
+    removeClientFromChannels(*getClientByFd(fd), "Connection closed");
     for (size_t i = 0; i < fds.size(); i++)
     {
         if (fds[i].fd == fd)
@@ -343,6 +332,7 @@ void Server::clearClient(int fd)
         delete it->second;
         clients.erase(it);
     }
+    close(fd);
 }
 
 void Server::removeClientFromChannels(Client &client, const std::string &message)
@@ -355,24 +345,22 @@ void Server::removeClientFromChannels(Client &client, const std::string &message
 
         if (channel->isMember(client.getFd()))
         {
+            channel->broadcast(message, client.getFd(), *this);
             channel->removeMember(client.getFd());
-            channel->broadcast(message);
-
-            if (channel->memberCount() == 0)
-            {
-                delete channel;
-                std::map<std::string, Channel*>::iterator toErase = it;
-                ++it;
-                channels.erase(toErase);
-                continue;
-            }
         }
         ++it;
     }
 }
 
-void Server::disconnectClient(Client &client, const std::string &reason)
+std::string Server::listChannels(int targetFd) const
 {
-    std::string quitMsg = MSG_QUIT(client.get_prefix(), reason);
-    removeClientFromChannels(client, quitMsg);
+    std::string channelList;
+    for (std::map<std::string, Channel*>::const_iterator it = channels.begin();
+         it != channels.end(); ++it)
+    {
+        Channel *channel = it->second;
+        if (channel->isMember(targetFd))
+            channelList += channel->getName() + " ";
+    }
+    return channelList;
 }
