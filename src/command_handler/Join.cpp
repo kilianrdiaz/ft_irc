@@ -39,7 +39,7 @@ void JoinChannelCommandHandler::execute(const std::vector<std::string> &params)
                 _server.addChannel(newChannel);
                 _client.write(MSG_JOIN(_client.getNickname(), currentChannelName));
                 _server.replyToClient(_client.getFd(),
-                    RPL_NAMREPLY(_client.getNickname(), currentChannelName, _client.getNickname()));
+                    RPL_NAMREPLY(_client.getNickname(), currentChannelName, "@"+_client.getNickname()));
                 _server.replyToClient(_client.getFd(),
                     RPL_ENDOFNAMES(_client.getNickname(), currentChannelName));
                 continue;

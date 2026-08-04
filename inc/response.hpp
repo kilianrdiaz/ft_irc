@@ -54,6 +54,9 @@
 #define ERR_NOTONCHANNEL(source, channel) \
     std::string("442 ") + source + " " + channel + " :You're not on that channel"
 
+#define ERR_TARGETNOTONCHANNEL(source, target, channel) \
+    std::string("441 ") + source + " " + target + " " + channel + " :They aren't on that channel"
+
 #define ERR_USERONCHANNEL(source, nickname, channel) \
     std::string("443 ") + source + " " + nickname + " " + channel + " :is already on channel"
 

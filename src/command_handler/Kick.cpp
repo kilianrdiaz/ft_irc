@@ -21,15 +21,18 @@ void KickChannelCommandHandler::execute(const std::vector<std::string> &params)
     std::string reason = (params.size() > 2) ? params[2] : "Kicked";
 
     Channel *channel = _server.getChannelByName(channelName);
+    Client *target = _server.searchNickname(targetNick);
 
     if (!channel)
         throw InvalidChannelException(_client.getNickname(), channelName);
 
-    if (!channel->isMember(_client.getFd()))
-        throw NotInChannelException(_client.getNickname(), channelName);
-
     if (!channel->isOperator(_client.getFd()))
         throw NotPrivilegedException(_client.getNickname(), channelName);
+    if (!target)
+        throw NoSuchNickException(_client.getNickname(), targetNick);
+    if (!channel->isMember(target->getFd()))
+        throw TargetNotInChannelException(_client.getNickname(), targetNick, channelName);
+
 
     int targetFd = _server.searchNickname(targetNick) ? _server.searchNickname(targetNick)->getFd() : -1;
 

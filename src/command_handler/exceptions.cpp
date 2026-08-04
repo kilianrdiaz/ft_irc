@@ -179,6 +179,15 @@ NotInChannelException::NotInChannelException(
 {
 }
 
+TargetNotInChannelException::TargetNotInChannelException(
+    const std::string &nickname,
+    const std::string &target,
+    const std::string &channel)
+    : ChannelException(
+        ERR_TARGETNOTONCHANNEL(nickname, target, channel))
+{
+}
+
 InviteOnlyChannelException::InviteOnlyChannelException(
     const std::string &nickname,
     const std::string &channel)
@@ -223,5 +232,9 @@ InvalidModeException::InvalidModeException(
     const std::string &mode)
     : CommandException(
         ERR_UNKNOWNMODE(nickname, mode))
+{
+}
+
+QuitException::~QuitException() throw()
 {
 }

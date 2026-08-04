@@ -222,6 +222,11 @@ void Server::receiveNewData(int fd)
         {
             AbstractCommandHandler::executeCommand(*this, *client, command.name, command.params);
         }
+        catch (const QuitException &e)
+        {
+            clearClient(fd);
+            return;
+        }
         catch (const CommandException &e)
         {
             std::cout << COL_WARN << "Client <" << fd << "> error on " << command.name

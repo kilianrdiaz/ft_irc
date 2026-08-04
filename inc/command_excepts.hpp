@@ -158,6 +158,14 @@ class NotInChannelException : public ChannelException
 		const std::string &channel);
 };
 
+class TargetNotInChannelException : public ChannelException
+{
+  public:
+	TargetNotInChannelException(const std::string &nickname,
+		const std::string &target,
+		const std::string &channel);
+};
+
 class InviteOnlyChannelException : public ChannelException
 {
   public:
@@ -198,6 +206,16 @@ class CannotSendToChannelException : public ChannelException
   public:
 	CannotSendToChannelException(const std::string &nickname,
 		const std::string &channel);
+};
+
+/*
+ * QUIT exception
+ */
+
+class QuitException : public std::exception
+{
+    public:
+        virtual ~QuitException() throw();
 };
 
 #endif
