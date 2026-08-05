@@ -88,15 +88,18 @@ void ModeCommandHandler::execute(const std::vector<std::string> &params)
             case 'o':
             {
                 if (argIndex >= params.size())
-                    throw InvalidParametersException(_client.getNickname(), "MODE");   // CAMBIA
+                    throw InvalidParametersException(_client.getNickname(), "MODE");
 
                 std::string targetNick = params[argIndex++];
-                int targetFd = _server.searchNickname(targetNick) ? _server.searchNickname(targetNick)->getFd() : -1;
+                Client *target = _server.searchNickname(targetNick);
 
-                if (targetFd == -1)
-                    throw ChannelException(ERR_USERNOTINCHANNEL(_client.getNickname(), targetNick, channelName));   // CAMBIA
+                if (!target)
+                    throw NoSuchNickException(_client.getNickname(), targetNick);
 
-                channel->setOperator(targetFd, sign);
+                if (!channel->isMember(target->getFd()))
+                    throw TargetNotInChannelException(_client.getNickname(), targetNick, channelName);
+
+                channel->setOperator(target->getFd(), sign);
                 break;
             }
 

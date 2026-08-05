@@ -17,7 +17,7 @@ void ListChannelCommandHandler::execute(const std::vector<std::string> &params)
 	if (params.size() == 0)
 	{
 		std::string channelList = _server.listChannels(_client.getFd());
-		_server.replyToClient(_client.getFd(), MSG_LIST(_client.getNickname(), channelList));
+		_client.write(MSG_LIST(_client.get_prefix(), channelList));
 		return;
 	}
 	std::string channelName = params[0];
