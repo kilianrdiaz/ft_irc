@@ -24,7 +24,7 @@ CapCommandHandler::~CapCommandHandler()
 void CapCommandHandler::execute(const std::vector<std::string> &params)
 {
     if (params.size() < 1)
-        throw InvalidParametersException(_client.get_prefix(), "CAP");
+        throw InvalidParametersException(_client.getNickname(), "CAP");
 
     std::string subcommand = params[0];
     if (subcommand == "LS")
@@ -37,6 +37,6 @@ void CapCommandHandler::execute(const std::vector<std::string> &params)
     }
     else
     {
-        throw InvalidParametersException(_client.get_prefix(), "CAP");
+        throw InvalidParametersException(_client.getNickname(), "CAP");
     }
 }

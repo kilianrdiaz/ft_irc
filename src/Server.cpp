@@ -256,7 +256,7 @@ void Server::tryRegisterClient(Client &client)
         client.setRegistered(true);
         std::cout << COL_EVENT << "Client <" << client.getFd() << "> registered as "
                    << client.getNickname() << COL_RESET << std::endl;
-        this->replyToClient(client.getFd(), RPL_WELCOME(client.get_prefix()));
+        this->replyToClient(client.getFd(), RPL_WELCOME(client.getNickname()));
     }
 }
 

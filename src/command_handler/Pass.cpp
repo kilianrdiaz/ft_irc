@@ -24,13 +24,13 @@ PassCommandHandler::~PassCommandHandler()
 void PassCommandHandler::execute(const std::vector<std::string> &params)
 {
     if (_client.getPassOk())
-        throw AlreadyPassedException(_client.get_prefix());
+        throw AlreadyPassedException(_client.getNickname());
     if (params.size() != 1)
-        throw InvalidParametersException(_client.get_prefix(), "PASS");
+        throw InvalidParametersException(_client.getNickname(), "PASS");
 
     std::string password = params[0];
     if (password != _server.getPassword())
-        throw InvalidPasswordException(_client.get_prefix());
+        throw InvalidPasswordException(_client.getNickname());
 
     _client.setPassOk(true);
 }

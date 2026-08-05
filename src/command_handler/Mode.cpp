@@ -30,21 +30,21 @@ static bool parseLimit(const std::string &str, size_t &out)
 void ModeCommandHandler::execute(const std::vector<std::string> &params)
 {
     if (params.size() < 2)
-        throw InvalidParametersException(_client.get_prefix(), "MODE");
+        throw InvalidParametersException(_client.getNickname(), "MODE");   // CAMBIA
 
     std::string channelName = params[0];
     std::string modeString = params[1];
 
     Channel *channel = _server.getChannelByName(channelName);
     if (!channel)
-        throw InvalidChannelException(_client.get_prefix(), channelName);
+        throw InvalidChannelException(_client.getNickname(), channelName);   // CAMBIA
 
 
     if (!channel->isMember(_client.getFd()))
-        throw NotInChannelException(_client.get_prefix(), channelName);
+        throw NotInChannelException(_client.getNickname(), channelName);     // CAMBIA
 
     if (!channel->isOperator(_client.getFd()))
-        throw NotPrivilegedException(_client.get_prefix(), channelName);
+        throw NotPrivilegedException(_client.getNickname(), channelName);    // CAMBIA
 
     size_t argIndex = 2;
     bool sign = true;
@@ -78,7 +78,7 @@ void ModeCommandHandler::execute(const std::vector<std::string> &params)
                 if (sign)
                 {
                     if (argIndex >= params.size())
-                        throw InvalidParametersException(_client.get_prefix(), "MODE");
+                        throw InvalidParametersException(_client.getNickname(), "MODE");   // CAMBIA
                     channel->setKey(params[argIndex++]);
                 }
                 else
@@ -88,13 +88,13 @@ void ModeCommandHandler::execute(const std::vector<std::string> &params)
             case 'o':
             {
                 if (argIndex >= params.size())
-                    throw InvalidParametersException(_client.get_prefix(), "MODE");
+                    throw InvalidParametersException(_client.getNickname(), "MODE");   // CAMBIA
 
                 std::string targetNick = params[argIndex++];
                 int targetFd = _server.searchNickname(targetNick) ? _server.searchNickname(targetNick)->getFd() : -1;
 
                 if (targetFd == -1)
-                    throw ChannelException(ERR_USERNOTINCHANNEL(_client.get_prefix(), targetNick, channelName));
+                    throw ChannelException(ERR_USERNOTINCHANNEL(_client.getNickname(), targetNick, channelName));   // CAMBIA
 
                 channel->setOperator(targetFd, sign);
                 break;
@@ -104,11 +104,11 @@ void ModeCommandHandler::execute(const std::vector<std::string> &params)
                 if (sign)
                 {
                     if (argIndex >= params.size())
-                        throw InvalidParametersException(_client.get_prefix(), "MODE");
+                        throw InvalidParametersException(_client.getNickname(), "MODE");   // CAMBIA
 
                     size_t limit;
                     if (!parseLimit(params[argIndex++], limit))
-                        throw InvalidModeException(_client.get_prefix(), "l");
+                        throw InvalidModeException(_client.getNickname(), "l");   // CAMBIA
                     channel->setUserLimit(limit);
                 }
                 else
@@ -116,7 +116,7 @@ void ModeCommandHandler::execute(const std::vector<std::string> &params)
                 break;
 
             default:
-                throw InvalidModeException(_client.get_prefix(), std::string(1, c));
+                throw InvalidModeException(_client.getNickname(), std::string(1, c));   // CAMBIA
         }
     }
 
@@ -124,5 +124,5 @@ void ModeCommandHandler::execute(const std::vector<std::string> &params)
     for (size_t i = 2; i < params.size(); i++)
         argsJoined += (i > 2 ? " " : "") + params[i];
 
-    _client.write(MSG_MODE(_client.get_prefix(), channelName, modeString, argsJoined));
+    _client.write(MSG_MODE(_client.get_prefix(), channelName, modeString, argsJoined));   // SE QUEDA: MSG_*
 }

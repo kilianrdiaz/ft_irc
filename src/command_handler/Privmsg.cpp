@@ -14,7 +14,7 @@ PrivmsgCommandHandler::~PrivmsgCommandHandler()
 void PrivmsgCommandHandler::execute(const std::vector<std::string> &params)
 {
     if (params.size() != 2 || params[1].empty())
-        throw InvalidParametersException(_client.get_prefix(), "PRIVMSG");
+        throw InvalidParametersException(_client.getNickname(), "PRIVMSG");   // CAMBIA
 
     std::string target = params[0];
     std::string message = params[1];
@@ -23,20 +23,20 @@ void PrivmsgCommandHandler::execute(const std::vector<std::string> &params)
     {
         Channel *channel = _server.getChannelByName(target);
         if (!channel)
-            throw InvalidChannelException(_client.get_prefix(), target);
+            throw InvalidChannelException(_client.getNickname(), target);   // CAMBIA
 
         if (!channel->isMember(_client.getFd()))
-            throw CannotSendToChannelException(_client.get_prefix(), target);
+            throw CannotSendToChannelException(_client.getNickname(), target);   // CAMBIA
 
-        channel->broadcast(MSG_PRIVMSG(_client.get_prefix(), target, message), _client.getFd());
+        channel->broadcast(MSG_PRIVMSG(_client.get_prefix(), target, message), _client.getFd());   // SE QUEDA
     }
     else
     {
         Client *targetClient = _server.searchNickname(target);
 
         if (targetClient == NULL)
-            throw NoSuchNickException(_client.get_prefix(), target);
+            throw NoSuchNickException(_client.getNickname(), target);   // CAMBIA
 
-        targetClient->write(MSG_PRIVMSG(_client.get_prefix(), target, message));
+        targetClient->write(MSG_PRIVMSG(_client.get_prefix(), target, message));   // SE QUEDA
     }
 }
