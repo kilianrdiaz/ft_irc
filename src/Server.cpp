@@ -195,6 +195,11 @@ void Server::receiveNewData(int fd)
     if (bytes <= 0)
     {
         std::cout << COL_EVENT << "Client <" << fd << "> Disconnected" << COL_RESET << std::endl;
+
+        Client *disconnecting = getClientByFd(fd);
+        if (disconnecting != NULL)
+            removeClientFromChannels(*disconnecting, MSG_QUIT(disconnecting->get_prefix(), "Connection closed"));
+
         clearClient(fd);
         return;
     }
@@ -332,7 +337,7 @@ void Server::removeChannel(const std::string &channelName)
 
 void Server::clearClient(int fd)
 {
-    removeClientFromChannels(*getClientByFd(fd), "Connection closed");
+    //removeClientFromChannels(*getClientByFd(fd), "Connection closed");
     for (size_t i = 0; i < fds.size(); i++)
     {
         if (fds[i].fd == fd)
