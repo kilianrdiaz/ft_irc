@@ -42,11 +42,14 @@ std::string &Client::getBuffer() { return _recvBuffer; }
 std::string Client::getNickname() const { return _nickname; }
 std::string Client::getUsername() const { return _username; }
 std::string Client::getRealname() const { return _realname; }
-bool Client::getPassOk() { return _passOk; }
-bool Client::getRegistered() { return _registered; }
+std::string Client::getHost() const { return _hostname; }
+std::string Client::getServername() const { return _servername; }
+bool Client::getPassOk() const { return _passOk; }
+bool Client::getRegistered() const { return _registered; }
 
 void Client::setFd(int newFd) { _fd = newFd; }
 void Client::setHostName(std::string hostname) { _hostname = hostname; }
+void Client::setServername(std::string servername) { _servername = servername; }
 void Client::setNickname(std::string newNick) { _nickname = newNick; }
 void Client::setUsername(std::string newUser) { _username = newUser; }
 void Client::setPassOk(bool value) { _passOk = value; }

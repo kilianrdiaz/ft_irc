@@ -14,7 +14,7 @@ JoinChannelCommandHandler::~JoinChannelCommandHandler()
 void JoinChannelCommandHandler::execute(const std::vector<std::string> &params)
 {
     if (params.empty() || params.size() > 2)
-        throw InvalidParametersException(_client.getNickname(), "JOIN");
+        throw InvalidParametersException(_client.get_prefix(), "JOIN");
 
     std::string channelName = params[0];
     std::string providedKey = (params.size() > 1) ? params[1] : "";
@@ -27,7 +27,7 @@ void JoinChannelCommandHandler::execute(const std::vector<std::string> &params)
         try
         {
             if (currentChannelName.empty() || currentChannelName[0] != '#')
-                throw InvalidChannelException(_client.getNickname(), currentChannelName);
+                throw InvalidChannelException(_client.get_prefix(), currentChannelName);
 
             Channel *channel = _server.getChannelByName(currentChannelName);
 
@@ -37,34 +37,34 @@ void JoinChannelCommandHandler::execute(const std::vector<std::string> &params)
                 Channel *newChannel = new Channel(currentChannelName, providedKey);
                 newChannel->addMember(&_client, 1);
                 _server.addChannel(newChannel);
-                _client.write(MSG_JOIN(_client.getNickname(), currentChannelName));
+                _client.write(MSG_JOIN(_client.get_prefix(), currentChannelName));
                 _server.replyToClient(_client.getFd(),
-                    RPL_NAMREPLY(_client.getNickname(), currentChannelName, "@"+_client.getNickname()));
+                    RPL_NAMREPLY(_client.get_prefix(), currentChannelName, "@"+_client.getNickname()));
                 _server.replyToClient(_client.getFd(),
-                    RPL_ENDOFNAMES(_client.getNickname(), currentChannelName));
+                    RPL_ENDOFNAMES(_client.get_prefix(), currentChannelName));
                 continue;
             }
 
             if (channel->isMember(_client.getFd()))
-                throw AlreadyInChannelException(_client.getNickname(), currentChannelName);
+                throw AlreadyInChannelException(_client.get_prefix(), currentChannelName);
 
             if (channel->getInviteOnly() && !channel->isInvited(_client.getFd()))
-                throw InviteOnlyChannelException(_client.getNickname(), currentChannelName);
+                throw InviteOnlyChannelException(_client.get_prefix(), currentChannelName);
 
             if (channel->getKey() != "" && channel->getKey() != providedKey)
-                throw BadChannelKeyException(_client.getNickname(), currentChannelName);
+                throw BadChannelKeyException(_client.get_prefix(), currentChannelName);
 
             if (channel->hasUserLimit() && channel->isFull())
-                throw ChannelFullException(_client.getNickname(), currentChannelName);
+                throw ChannelFullException(_client.get_prefix(), currentChannelName);
 
             channel->addMember(&_client, 0);
             channel->removeInvite(_client.getFd());
-            _client.write(MSG_JOIN(_client.getNickname(), currentChannelName));
+            _client.write(MSG_JOIN(_client.get_prefix(), currentChannelName));
             _server.replyToClient(_client.getFd(),
-                RPL_NAMREPLY(_client.getNickname(), currentChannelName, channel->getMemberList(_server)));
+                RPL_NAMREPLY(_client.get_prefix(), currentChannelName, channel->getMemberList(_server)));
             _server.replyToClient(_client.getFd(),
-                RPL_ENDOFNAMES(_client.getNickname(), currentChannelName));
-            channel->broadcast(MSG_JOIN(_client.getNickname(), currentChannelName), _client.getFd(), _server);
+                RPL_ENDOFNAMES(_client.get_prefix(), currentChannelName));
+            channel->broadcast(MSG_JOIN(_client.get_prefix(), currentChannelName), _client.getFd());
         }
         catch (CommandException &e)
         {

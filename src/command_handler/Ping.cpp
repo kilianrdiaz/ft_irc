@@ -24,14 +24,14 @@ PingCommandHandler::~PingCommandHandler()
 void PingCommandHandler::execute(const std::vector<std::string> &params)
 {
     if (params.size() != 1)
-        throw InvalidParametersException(_client.getNickname(), "PING");
+        throw InvalidParametersException(_client.get_prefix(), "PING");
 
     if (!_client.getPassOk())
-        throw NotRegisteredException(_client.getNickname());
+        throw NotRegisteredException(_client.get_prefix());
 
     std::string pingMessage = params[0];
     if (pingMessage.empty())
-        throw InvalidPingException(_client.getNickname());
+        throw InvalidPingException(_client.get_prefix());
 
     _client.write("PONG :" + pingMessage);
 }

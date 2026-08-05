@@ -8,6 +8,7 @@ class Client
   private:
 	int _fd;
 	std::string _hostname;
+	std::string _servername;
 	std::string _recvBuffer;
 	std::string _nickname;
 	std::string _username;
@@ -25,15 +26,17 @@ class Client
 	int getFd() const;
 	std::string &getBuffer();
 	std::string getHost() const;
+	std::string getServername() const;
 	std::string getNickname() const;
 	std::string getUsername() const;
 	std::string getRealname() const;
 	std::string get_prefix() const;
-	bool getPassOk();
-	bool getRegistered();
+	bool getPassOk() const;
+	bool getRegistered() const;
 
 	void setFd(int newFd);
 	void setHostName(std::string hostname);
+	void setServername(std::string servername);
 	void setNickname(std::string newNick);
 	void setUsername(std::string newUser);
 	void setRealname(std::string newRealname);

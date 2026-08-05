@@ -14,21 +14,21 @@ PartChannelCommandHandler::~PartChannelCommandHandler()
 void PartChannelCommandHandler::execute(const std::vector<std::string> &params)
 {
     if (params.size() < 1 || params.size() > 2)
-        throw InvalidParametersException(_client.getNickname(), "PART");
+        throw InvalidParametersException(_client.get_prefix(), "PART");
 
     std::string channelName = params[0];
 
     Channel *channel = _server.getChannelByName(channelName);
 
     if (!channel)
-        throw InvalidChannelException(_client.getNickname(), channelName);
+        throw InvalidChannelException(_client.get_prefix(), channelName);
 
     if (!channel->isMember(_client.getFd()))
-        throw NotInChannelException(_client.getNickname(), channelName);
+        throw NotInChannelException(_client.get_prefix(), channelName);
     std::string reason = params.size() > 1 ? params[1] : "";
-    channel->broadcast(MSG_PART(_client.getNickname(), channelName, reason), _client.getFd(), _server);
+    channel->broadcast(MSG_PART(_client.get_prefix(), channelName, reason), _client.getFd());
     channel->removeMember(_client.getFd());
     if (channel->memberCount() == 0)
         _server.removeChannel(channelName);
-    _client.write(MSG_PART(_client.getNickname(), channelName, reason));
+    _client.write(MSG_PART(_client.get_prefix(), channelName, reason));
 }

@@ -25,17 +25,17 @@ NickCommandHandler::~NickCommandHandler()
 void NickCommandHandler::execute(const std::vector<std::string> &params)
 {
     if (!_client.getPassOk())
-        throw NotRegisteredException(_client.getNickname());
+        throw NotRegisteredException(_client.get_prefix());
 
     if (params.size() != 1)
-        throw InvalidParametersException(_client.getNickname(), "NICK");
+        throw InvalidParametersException(_client.get_prefix(), "NICK");
 
     std::string nickname = params[0];
     if (nickname.empty())
-        throw InvalidNicknameException(_client.getNickname());
+        throw InvalidNicknameException(_client.get_prefix());
 
     if (_server.searchNickname(nickname, _client.getFd()))
-        throw AlreadyExistNicknameException(_client.getNickname(), nickname);
+        throw AlreadyExistNicknameException(_client.get_prefix(), nickname);
 
     _client.setNickname(nickname);
     _server.tryRegisterClient(_client);

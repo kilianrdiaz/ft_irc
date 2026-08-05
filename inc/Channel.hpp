@@ -66,5 +66,5 @@ class Channel
 	bool hasUserLimit() const;
 	bool isFull() const;
 
-	void broadcast(const std::string &message, int senderFd, const Server &server) const;
+	void broadcast(const std::string &message, int senderFd) const;
 };

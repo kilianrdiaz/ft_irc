@@ -142,15 +142,16 @@ void Server::serSocket()
     newPoll.revents = 0; // qué pasó realmente (lo rellena poll())
     fds.push_back(newPoll);
 }
-
 void Server::acceptNewClient()
 {
     Client *newClient = new Client();
     struct sockaddr_in cliAddress;
+    struct sockaddr_in serverAddress;
     struct pollfd newPoll;
-    socklen_t len = sizeof(cliAddress);
+    socklen_t cliLen = sizeof(cliAddress);
+    socklen_t serverLen = sizeof(serverAddress);
 
-    int clifd = accept(serSocketFd, (sockaddr *)&cliAddress, &len);
+    int clifd = accept(serSocketFd, (sockaddr *)&cliAddress, &cliLen);
     if (clifd == -1)
     {
         std::cout << COL_ERROR << "accept() failed" << COL_RESET << std::endl;
@@ -171,7 +172,13 @@ void Server::acceptNewClient()
     newPoll.revents = 0;
 
     newClient->setFd(clifd);
-    newClient->setHostName(inet_ntoa(cliAddress.sin_addr));
+
+    if (getsockname(clifd, (sockaddr *)&serverAddress, &serverLen) == 0)
+    {
+        newClient->setHostName(inet_ntoa(cliAddress.sin_addr));
+        newClient->setServername(inet_ntoa(serverAddress.sin_addr));
+    }
+
     clients[clifd] = newClient;
     fds.push_back(newPoll);
 
@@ -249,7 +256,7 @@ void Server::tryRegisterClient(Client &client)
         client.setRegistered(true);
         std::cout << COL_EVENT << "Client <" << client.getFd() << "> registered as "
                    << client.getNickname() << COL_RESET << std::endl;
-        this->replyToClient(client.getFd(), RPL_WELCOME(client.getNickname()));
+        this->replyToClient(client.getFd(), RPL_WELCOME(client.get_prefix()));
     }
 }
 
@@ -277,8 +284,12 @@ Client *Server::getClientByFd(int fd)
 void Server::replyToClient(int fd, const std::string &message)
 {
     Client *client = getClientByFd(fd);
-    if (client != NULL)
-        client->write(message);
+    std::string serverReply;
+
+    if (!client)
+        return;
+    serverReply = ":" + client->getServername() + " " + message;
+    client->write(serverReply);
 }
 
 std::string Server::getPassword() const
@@ -350,7 +361,7 @@ void Server::removeClientFromChannels(Client &client, const std::string &message
 
         if (channel->isMember(client.getFd()))
         {
-            channel->broadcast(message, client.getFd(), *this);
+            channel->broadcast(message, client.getFd());
             channel->removeMember(client.getFd());
         }
         ++it;

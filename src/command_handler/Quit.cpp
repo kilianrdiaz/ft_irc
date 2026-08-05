@@ -14,7 +14,7 @@ void QuitCommandHandler::execute(const std::vector<std::string> &params)
 {
     std::string reason = params.empty() ? "Client Quit" : params[0];
 
-    _client.write(MSG_QUIT(_client.getNickname(), reason));
+    _client.write(MSG_QUIT(_client.get_prefix(), reason));
 
     throw QuitException();
 }

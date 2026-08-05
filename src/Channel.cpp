@@ -191,14 +191,13 @@ std::string Channel::getMemberList(const Server &server) const
     return memberList;
 }
 
-void Channel::broadcast(const std::string &msg, int senderFd, const Server &server) const
+void Channel::broadcast(const std::string &msg, int exclude) const
 {
+    std::string message = msg + "\r\n";
     for (std::map<int, bool>::const_iterator it = members.begin();
          it != members.end(); ++it)
     {
-        if (it->first == senderFd)
-            continue;
-
-        const_cast<Server &>(server).replyToClient(it->first, msg);
+        if (it->first != exclude)
+            send(it->first, message.c_str(), message.size(), 0);
     }
 }
