@@ -41,4 +41,5 @@ void InviteCommandHandler::execute(const std::vector<std::string> &params)
     channel->invite(targetClient->getFd());
 
     _server.replyToClient(_client.getFd(), RPL_INVITING(_client.getNickname(), targetNick, channelName));
+    targetClient->write(MSG_INVITE(_client.get_prefix(), targetNick, channelName));
 }

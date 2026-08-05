@@ -128,6 +128,9 @@
 ** ============================================================================
 */
 
+#define MSG_NICK(prefix, newNick) \
+    std::string(":") + prefix + " NICK :" + newNick
+
 #define MSG_JOIN(prefix, channel) \
     std::string(":") + prefix + " JOIN :" + channel
 
@@ -154,6 +157,9 @@
 
 #define MSG_LIST(prefix, channels) \
     std::string(":") + prefix + " LIST " + channels
+
+#define MSG_INVITE(prefix, target, channel) \
+    std::string(":") + prefix + " INVITE " + target + " :" + channel
 
 
 /*
