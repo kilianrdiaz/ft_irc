@@ -182,6 +182,15 @@ static void handleInvite(
     handler.execute(params);
 }
 
+static void handleWhois(
+    Server &server,
+    Client &client,
+    const std::vector<std::string> &params)
+{
+    WhoisCommandHandler handler(server, client);
+    handler.execute(params);
+}
+
 static std::map<std::string, HandlerExecutor> &getCommands()
 {
     static std::map<std::string, HandlerExecutor> commands;
@@ -202,6 +211,7 @@ static std::map<std::string, HandlerExecutor> &getCommands()
         commands["TOPIC"] = &handleTopic;
         commands["MODE"] = &handleMode;
         commands["INVITE"] = &handleInvite;
+        commands["WHOIS"] = &handleWhois;
     }
 
     return (commands);

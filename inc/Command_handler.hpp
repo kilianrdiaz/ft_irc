@@ -298,4 +298,21 @@ class PrivmsgCommandHandler : public AChannelCommandHandler
 
 	void execute(const std::vector<std::string> &params);
 };
+
+/*`
+ * ========================================================================== *
+ * WHOIS
+ * ========================================================================== *
+ */
+
+class WhoisCommandHandler : public AbstractCommandHandler
+{
+  public:
+	WhoisCommandHandler(Server &server, Client &client);
+
+	~WhoisCommandHandler();
+
+	void execute(const std::vector<std::string> &params);
+};
+
 #endif

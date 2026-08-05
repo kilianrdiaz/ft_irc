@@ -121,6 +121,18 @@
 #define RPL_INVITING(source, target, channel) \
     std::string("341 ") + source + " " + target + " " + channel
 
+#define RPL_WHOISUSER(askerNick, targetNick, username, host, realname) \
+    std::string("311 ") + askerNick + " " + targetNick + " " + username + " " + host + " * :" + realname
+
+#define RPL_WHOISSERVER(askerNick, targetNick, servername) \
+    std::string("312 ") + askerNick + " " + targetNick + " " + servername + " :ft_irc network"
+
+#define RPL_WHOISCHANNELS(askerNick, targetNick, channels) \
+    std::string("319 ") + askerNick + " " + targetNick + " :" + channels
+
+#define RPL_ENDOFWHOIS(askerNick, targetNick) \
+    std::string("318 ") + askerNick + " " + targetNick + " :End of /WHOIS list"
+
 
 /*
 ** ============================================================================
