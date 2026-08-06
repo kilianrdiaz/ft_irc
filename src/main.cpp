@@ -65,6 +65,4 @@ int main(int argc, char **argv)
     {
         std::cerr << e.what() << std::endl;
     }
-
-    std::cout << COL_EVENT << ">> Server closed <<" << COL_RESET << std::endl;
 }

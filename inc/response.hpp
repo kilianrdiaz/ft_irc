@@ -180,36 +180,12 @@
 ** ============================================================================
 */
 
-static inline void log(const std::string &message)
-{
-    time_t rawtime;
-    struct tm *timeinfo;
-    char buffer[80];
-
-    time(&rawtime);
-    timeinfo = localtime(&rawtime);
-
-    strftime(
-        buffer,
-        sizeof(buffer),
-        "%d-%m-%Y %H:%M:%S",
-        timeinfo
-    );
-
-    std::cout
-        << "\033[0;34m["
-        << buffer
-        << "]\033[0m "
-        << message
-        << std::endl;
-}
-
 enum LogLevel
 {
-    LOG_INFO,
-    LOG_WARN,
-    LOG_ERROR,
-    LOG_EVENT
+    INFO,
+    WARN,
+    ERROR,
+    EVENT
 };
 
 template <typename T>
@@ -235,16 +211,15 @@ static inline void log(LogLevel level, const std::string &message)
 
     switch (level)
     {
-        case LOG_INFO:  color = "\033[0;32m"; tag = "INFO "; break;
-        case LOG_WARN:  color = "\033[0;33m"; tag = "WARN "; break;
-        case LOG_ERROR: color = "\033[0;31m"; tag = "ERROR"; break;
-        case LOG_EVENT: color = "\033[0;36m"; tag = "EVENT"; break;
-        default:        color = "\033[0m";    tag = "?????"; break;
+        case INFO:  color = COL_INFO;    tag = "INFO"; break;
+        case WARN:  color = COL_WARN;    tag = "WARN"; break;
+        case ERROR: color = COL_ERROR;   tag = "ERROR"; break;
+        case EVENT: color = COL_EVENT;   tag = "EVENT"; break;
+        default:    color = COL_RESET;   tag = "?????"; break;
     }
 
-    std::cout << "\033[2;37m[" << buffer << "]\033[0m "
-               << color << "[" << tag << "]\033[0m "
-               << message << std::endl;
+    std::cout << "\033[2;37m[" << buffer << "] "
+               << color << "[" << tag << "] " << COL_RESET << message << std::endl;
 }
 
 #endif

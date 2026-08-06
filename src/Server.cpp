@@ -15,21 +15,6 @@
 
 bool Server::sig = false;
 
-// Añade "[HH:MM:SS] [TAG] " delante del siguiente mensaje que se escriba en cout.
-// No toca nada de response.hpp; vive solo aquí, específico para los logs de Server.
-static void logPrefix(const char *tag, const char *color)
-{
-    time_t rawtime;
-    struct tm *timeinfo;
-    char timebuf[16];
-
-    time(&rawtime);
-    timeinfo = localtime(&rawtime);
-    strftime(timebuf, sizeof(timebuf), "%H:%M:%S", timeinfo);
-
-    std::cout << "[" << timebuf << "] " << color << "[" << tag << "]" << COL_RESET << " ";
-}
-
 Server::Server(int port, std::string password) : port(port), password(password), serSocketFd(-1) {}
 
 Server::Server(const Server &other)
@@ -56,8 +41,7 @@ Server::~Server()
 
     while (it != clients.end())
     {
-        logPrefix("EVENT", COL_EVENT);
-        std::cout << COL_EVENT << "Client <" << it->first << "> disconnected (server shutdown)" << COL_RESET << std::endl;
+        log(EVENT, "Client <" + ::toStr(it->first) + "> disconnected (server shutdown)");
         close(it->first);
         delete it->second;
         it++;
@@ -73,8 +57,7 @@ Server::~Server()
 
     if (serSocketFd != -1)
     {
-        logPrefix("INFO ", COL_INFO);
-        std::cout << COL_INFO << "Server socket <" << serSocketFd << "> closed" << COL_RESET << std::endl;
+        log(INFO, "Server socket <" + ::toStr(serSocketFd) + "> closed");
         close(serSocketFd);
     }
 }
@@ -82,8 +65,7 @@ Server::~Server()
 void Server::signalHandler(int signum)
 {
     (void)signum;
-    logPrefix("WARN ", COL_WARN);
-    std::cout << COL_WARN << "Signal received, shutting down..." << COL_RESET << std::endl;
+    log(WARN, "Signal received, shutting down...");
     Server::sig = true;
 }
 
@@ -91,17 +73,14 @@ void Server::serverInit()
 {
     serSocket();
 
-    logPrefix("INFO ", COL_INFO);
-    std::cout << COL_INFO << "Server socket <" << serSocketFd << "> ready" << COL_RESET << std::endl;
-    logPrefix("INFO ", COL_INFO);
-    std::cout << COL_INFO << "Waiting for connections..." << COL_RESET << std::endl;
+    log(INFO, "Server socket <" + ::toStr(serSocketFd) + "> ready");
+    log(INFO, "Waiting for connections...");
 
     while (Server::sig == false)
     {
         if ((poll(&fds[0], fds.size(), -1) == -1) && Server::sig == false)
         {
-            logPrefix("ERROR", COL_ERROR);
-            std::cout << COL_ERROR << "poll() failed" << COL_RESET << std::endl;
+            log(ERROR, "poll() failed");
             throw(std::runtime_error("poll() failed"));
         }
 
@@ -133,34 +112,29 @@ void Server::serSocket()
     serSocketFd = socket(AF_INET, SOCK_STREAM, 0);
     if (serSocketFd == -1)
     {
-        logPrefix("ERROR", COL_ERROR);
-        std::cout << COL_ERROR << "failed to create socket" << COL_RESET << std::endl;
+        log(ERROR, "failed to create socket");
         throw(std::runtime_error("failed to create socket"));
     }
 
     int en = 1;
     if (setsockopt(serSocketFd, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) == -1)
     {
-        logPrefix("ERROR", COL_ERROR);
-        std::cout << COL_ERROR << "failed to set option (SO_REUSEADDR) on socket" << COL_RESET << std::endl;
+        log(ERROR, "failed to set option (SO_REUSEADDR) on socket");
         throw(std::runtime_error("failed to set option (SO_REUSEADDR) on socket"));
     }
     if (fcntl(serSocketFd, F_SETFL, O_NONBLOCK) == -1)
     {
-        logPrefix("ERROR", COL_ERROR);
-        std::cout << COL_ERROR << "failed to set option (O_NONBLOCK) on socket" << COL_RESET << std::endl;
-        throw(std::runtime_error("faild to set option (O_NONBLOCK) on socket"));
+        log(ERROR, "failed to set option (O_NONBLOCK) on socket");
+        throw(std::runtime_error("failed to set option (O_NONBLOCK) on socket"));
     }
     if (bind(serSocketFd, (struct sockaddr *)&address, sizeof(address)) == -1)
     {
-        logPrefix("ERROR", COL_ERROR);
-        std::cout << COL_ERROR << "failed to bind socket" << COL_RESET << std::endl;
+        log(ERROR, "failed to bind socket");
         throw(std::runtime_error("failed to bind socket"));
     }
     if (listen(serSocketFd, SOMAXCONN) == -1)
     {
-        logPrefix("ERROR", COL_ERROR);
-        std::cout << COL_ERROR << "listen() failed" << COL_RESET << std::endl;
+        log(ERROR, "failed to listen on socket");
         throw(std::runtime_error("listen() failed"));
     }
 
@@ -182,16 +156,14 @@ void Server::acceptNewClient()
     int clifd = accept(serSocketFd, (sockaddr *)&cliAddress, &cliLen);
     if (clifd == -1)
     {
-        logPrefix("ERROR", COL_ERROR);
-        std::cout << COL_ERROR << "accept() failed" << COL_RESET << std::endl;
+        log(ERROR, "accept() failed");
         delete newClient;
         return;
     }
 
     if (fcntl(clifd, F_SETFL, O_NONBLOCK) == -1)
     {
-        logPrefix("ERROR", COL_ERROR);
-        std::cout << COL_ERROR << "fcntl() failed" << COL_RESET << std::endl;
+        log(ERROR, "fcntl() failed");
         delete newClient;
         close(clifd);
         return;
@@ -212,8 +184,7 @@ void Server::acceptNewClient()
     clients[clifd] = newClient;
     fds.push_back(newPoll);
 
-    logPrefix("EVENT", COL_EVENT);
-    std::cout << COL_EVENT << "Client <" << clifd << "> connected from " << newClient->getHost() << COL_RESET << std::endl;
+    log(EVENT, "Client <" + ::toStr(clifd) + "> connected from " + newClient->getHost());
 }
 
 void Server::receiveNewData(int fd)
@@ -225,8 +196,7 @@ void Server::receiveNewData(int fd)
 
     if (bytes <= 0)
     {
-        logPrefix("EVENT", COL_EVENT);
-        std::cout << COL_EVENT << "Client <" << fd << "> disconnected" << COL_RESET << std::endl;
+        log(EVENT, "Client <" + ::toStr(fd) + "> disconnected");
 
         Client *disconnecting = getClientByFd(fd);
         if (disconnecting != NULL)
@@ -259,9 +229,7 @@ void Server::receiveNewData(int fd)
 
         Command command = AbstractCommandHandler::parseLine(line);
 
-        logPrefix("EVENT", COL_EVENT);
-        std::cout << COL_EVENT << "Client <" << fd << "> (" << client->getNickname()
-                   << ") -> " << command.name << COL_RESET << std::endl;
+        log(EVENT, "Client <" + ::toStr(fd) + "> (" + client->getNickname() + ") -> " + command.name);
 
         try
         {
@@ -274,9 +242,7 @@ void Server::receiveNewData(int fd)
         }
         catch (const CommandException &e)
         {
-            logPrefix("WARN ", COL_WARN);
-            std::cout << COL_WARN << "Client <" << fd << "> error on " << command.name
-                       << ": " << e.what() << COL_RESET << std::endl;
+            log(WARN, "Client <" + ::toStr(fd) + "> error on " + command.name + ": " + e.what());
             this->replyToClient(fd, e.what());
             return;
         }
@@ -293,9 +259,7 @@ void Server::tryRegisterClient(Client &client)
     if (client.getPassOk() && hasRealNickname && !client.getUsername().empty())
     {
         client.setRegistered(true);
-        logPrefix("EVENT", COL_EVENT);
-        std::cout << COL_EVENT << "Client <" << client.getFd() << "> registered as "
-                   << client.getNickname() << COL_RESET << std::endl;
+        log(EVENT, "Client <" + ::toStr(client.getFd()) + "> registered as " + client.getNickname());
         this->replyToClient(client.getFd(), RPL_WELCOME(client.getNickname()));
     }
 }
@@ -358,8 +322,7 @@ Channel *Server::getChannelByName(const std::string &channelName)
 void Server::addChannel(Channel *channel)
 {
     channels[channel->getName()] = channel;
-    logPrefix("EVENT", COL_EVENT);
-    std::cout << COL_EVENT << "Channel " << channel->getName() << " created" << COL_RESET << std::endl;
+    log(EVENT, "Channel " + channel->getName() + " created");
 }
 
 void Server::removeChannel(const std::string &channelName)
@@ -367,8 +330,7 @@ void Server::removeChannel(const std::string &channelName)
     std::map<std::string, Channel*>::iterator it = channels.find(channelName);
     if (it != channels.end())
     {
-        logPrefix("EVENT", COL_EVENT);
-        std::cout << COL_EVENT << "Channel " << channelName << " destroyed (empty)" << COL_RESET << std::endl;
+        log(EVENT, "Channel " + channelName + " destroyed (empty)");
         delete it->second;
         channels.erase(it);
     }
