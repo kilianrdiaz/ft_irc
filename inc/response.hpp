@@ -133,6 +133,21 @@
 #define RPL_ENDOFWHOIS(askerNick, targetNick) \
     std::string("318 ") + askerNick + " " + targetNick + " :End of /WHOIS list"
 
+#define RPL_WHOREPLY(askerNick, channel, username, host, servername, targetNick, flags, realname) \
+    std::string("352 ") + askerNick + " " + channel + " " + username + " " + host + " " + servername + " " + targetNick + " " + flags + " :0 " + realname
+
+#define RPL_ENDOFWHO(askerNick, channel) \
+    std::string("315 ") + askerNick + " " + channel + " :End of /WHO list"
+
+#define RPL_LISTSTART(askerNick) \
+    std::string("321 ") + askerNick + " Channel :Users Name"
+
+#define RPL_LIST(askerNick, channel, count, topic) \
+    std::string("322 ") + askerNick + " " + channel + " " + count + " :" + topic
+
+#define RPL_LISTEND(askerNick) \
+    std::string("323 ") + askerNick + " :End of /LIST"
+
 
 /*
 ** ============================================================================

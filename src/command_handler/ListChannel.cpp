@@ -14,7 +14,18 @@ ListCommandHandler::~ListCommandHandler()
 
 void ListCommandHandler::execute(const std::vector<std::string> &params)
 {
-	(void)params;
-	std::string channelList = _server.listChannels(_client.getFd());
-	_client.write(MSG_LIST(_client.get_prefix(), channelList));
+    std::map<std::string, Channel*> allChannels = _server.getChannels();
+
+    _server.replyToClient(_client.getFd(), RPL_LISTSTART(_client.getNickname()));
+
+    for (std::map<std::string, Channel*>::iterator it = allChannels.begin(); it != allChannels.end(); ++it)
+    {
+        if (!params.empty() && params[0] != it->first)
+            continue;
+
+        _server.replyToClient(_client.getFd(),
+            RPL_LIST(_client.getNickname(), it->first, ::toStr(it->second->memberCount()), it->second->getTopic()));
+    }
+
+    _server.replyToClient(_client.getFd(), RPL_LISTEND(_client.getNickname()));
 }

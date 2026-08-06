@@ -40,5 +40,6 @@ void TopicCommandHandler::execute(const std::vector<std::string> &params)
 
     std::string newTopic = params[1];
     channel->setTopic(newTopic);
-    _server.replyToClient(_client.getFd(), RPL_TOPIC(_client.getNickname(), channelName, newTopic));
+
+    channel->broadcast(MSG_TOPIC(_client.get_prefix(), channelName, newTopic), -1);
 }
