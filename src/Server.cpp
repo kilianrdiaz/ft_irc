@@ -395,16 +395,3 @@ void Server::removeClientFromChannels(Client &client, const std::string &message
         ++it;
     }
 }
-
-std::string Server::listChannels(int targetFd) const
-{
-    std::string channelList;
-    for (std::map<std::string, Channel*>::const_iterator it = channels.begin();
-         it != channels.end(); ++it)
-    {
-        Channel *channel = it->second;
-        if (channel->isMember(targetFd))
-            channelList += channel->getName() + " ";
-    }
-    return channelList;
-}

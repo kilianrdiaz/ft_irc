@@ -57,6 +57,7 @@ int main(int argc, char **argv)
 
     try
     {
+        signal(SIGPIPE, SIG_IGN);
         signal(SIGINT, Server::signalHandler);
         signal(SIGQUIT, Server::signalHandler);
         ser.serverInit();

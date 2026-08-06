@@ -44,7 +44,6 @@ class Server
 	Channel *getChannelByName(const std::string &channelName);
 	void addChannel(Channel *channel);
 	void removeChannel(const std::string &channelName);
-	std::string listChannels(int targetFd) const;
 
 	Client *getClientByFd(int fd);
 
