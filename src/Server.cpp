@@ -391,6 +391,17 @@ void Server::removeClientFromChannels(Client &client, const std::string &message
         {
             channel->broadcast(message, client.getFd());
             channel->removeMember(client.getFd());
+
+            if (channel->memberCount() == 0)
+            {
+                std::string channelName = it->first;
+                std::map<std::string, Channel*>::iterator toErase = it;
+                ++it;
+                delete channel;
+                channels.erase(toErase);
+                log(EVENT, "Channel " + channelName + " destroyed (empty)");
+                continue;
+            }
         }
         ++it;
     }
