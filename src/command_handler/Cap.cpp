@@ -35,6 +35,10 @@ void CapCommandHandler::execute(const std::vector<std::string> &params)
     {
         _client.write("CAP * ACK :multi-prefix");
     }
+    else if (subcommand == "END")
+    {
+        // No hace falta responder nada; el cliente solo avisa de que terminó de negociar.
+    }
     else
     {
         throw InvalidParametersException(_client.getNickname(), "CAP");
