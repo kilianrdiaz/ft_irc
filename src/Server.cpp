@@ -73,11 +73,24 @@ void Server::serverInit()
 {
     serSocket();
 
-    log(INFO, "Server socket <" + ::toStr(serSocketFd) + "> ready");
+    log(INFO, "Server socket <" + toStr(serSocketFd) + "> ready");
     log(INFO, "Waiting for connections...");
 
     while (Server::sig == false)
     {
+        // Antes de cada poll(), decidimos a quién vigilar también para escritura
+        for (size_t i = 0; i < fds.size(); i++)
+        {
+            if (fds[i].fd == serSocketFd)
+                continue;
+
+            Client *c = getClientByFd(fds[i].fd);
+            if (c != NULL && c->hasPendingWrite())
+                fds[i].events = POLLIN | POLLOUT;
+            else
+                fds[i].events = POLLIN;
+        }
+
         if ((poll(&fds[0], fds.size(), -1) == -1) && Server::sig == false)
         {
             log(ERROR, "poll() failed");
@@ -86,15 +99,24 @@ void Server::serverInit()
 
         for (size_t i = 0; i < fds.size(); i++)
         {
+            if (fds[i].fd == serSocketFd)
+            {
+                if (fds[i].revents & POLLIN)
+                    acceptNewClient();
+                continue;
+            }
+
+            Client *c = getClientByFd(fds[i].fd);
+            if (c == NULL)
+                continue;
+
+            if (fds[i].revents & POLLOUT)
+                c->flushSend();
+
             if (fds[i].revents & POLLIN)
             {
-                if (fds[i].fd == serSocketFd)
-                    acceptNewClient();
-                else
-                {
-                    receiveNewData(fds[i].fd);
-                    break;
-                }
+                receiveNewData(fds[i].fd);
+                break; // fds pudo mutar (clearClient); reevaluamos en el siguiente poll()
             }
         }
     }

@@ -13,6 +13,7 @@ class Client
 	std::string _nickname;
 	std::string _username;
 	std::string _realname;
+	std::string _sendBuffer;
 	bool _passOk;
 	bool _registered;
 
@@ -43,4 +44,6 @@ class Client
 	void setPassOk(bool value);
 	void setRegistered(bool value);
 	void write(const std::string &message);
+	bool hasPendingWrite() const;
+    void flushSend();
 };

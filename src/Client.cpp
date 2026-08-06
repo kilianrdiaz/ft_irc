@@ -66,10 +66,23 @@ std::string     Client::get_prefix() const
 
 void Client::write(const std::string &message)
 {
-    std::string fullMessage = message + "\r\n";
-    ssize_t sent = send(_fd, fullMessage.c_str(), fullMessage.size(), 0);
+    _sendBuffer += message + "\r\n";
+}
+
+bool Client::hasPendingWrite() const
+{
+    return !_sendBuffer.empty();
+}
+
+void Client::flushSend()
+{
+    if (_sendBuffer.empty())
+        return;
+
+    ssize_t sent = send(_fd, _sendBuffer.c_str(), _sendBuffer.size(), 0);
+
     if (sent == -1)
-        std::cerr << "Client <" << _fd << "> send() failed" << std::endl;
-    else if (static_cast<size_t>(sent) < fullMessage.size())
-        std::cerr << "Client <" << _fd << "> partial send (" << sent << "/" << fullMessage.size() << " bytes)" << std::endl;
+        return; // no miramos errno; simplemente lo reintentará poll() en el siguiente ciclo
+
+    _sendBuffer.erase(0, sent); // quita solo lo que de verdad se mandó, deja el resto pendiente
 }
