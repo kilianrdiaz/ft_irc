@@ -173,16 +173,32 @@ class AChannelCommandHandler : public AbstractCommandHandler
 
 /*
  * ========================================================================== *
- * LIST CHANNEL
+ * LIST
  * ========================================================================== *
  */
 
- class ListChannelCommandHandler : public AChannelCommandHandler
+ class ListCommandHandler : public AChannelCommandHandler
  {
    public:
-	ListChannelCommandHandler(Server &server, Client &client);
+	ListCommandHandler(Server &server, Client &client);
 
-	~ListChannelCommandHandler();
+	~ListCommandHandler();
+
+	void execute(const std::vector<std::string> &params);
+ };
+
+ /*
+ * ========================================================================== *
+ * WHO
+ * ========================================================================== *
+ */
+
+ class WhoChannelCommandHandler : public AChannelCommandHandler	
+ {
+   public:
+	WhoChannelCommandHandler(Server &server, Client &client);
+
+	~WhoChannelCommandHandler();
 
 	void execute(const std::vector<std::string> &params);
  };

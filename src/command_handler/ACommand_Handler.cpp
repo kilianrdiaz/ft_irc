@@ -119,12 +119,21 @@ static void handlePrivmsg(
     handler.execute(params);
 }
 
-static void handleListChannel(
+static void handleList(
     Server &server,
     Client &client,
     const std::vector<std::string> &params)
 {
-    ListChannelCommandHandler handler(server, client);
+    ListCommandHandler handler(server, client);
+    handler.execute(params);
+}
+
+static void handleWho(
+    Server &server,
+    Client &client,
+    const std::vector<std::string> &params)
+{
+    WhoChannelCommandHandler handler(server, client);
     handler.execute(params);
 }
 
@@ -204,7 +213,8 @@ static std::map<std::string, HandlerExecutor> &getCommands()
         commands["CAP"] = &handleCap;
         commands["QUIT"] = &handleQuit;
         commands["PRIVMSG"] = &handlePrivmsg;
-        commands["LIST"] = &handleListChannel;
+        commands["LIST"] = &handleList;
+        commands["WHO"] = &handleWho;
         commands["JOIN"] = &handleJoin;
         commands["PART"] = &handlePart;
         commands["KICK"] = &handleKick;

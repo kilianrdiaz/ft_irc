@@ -24,6 +24,7 @@ SRCS = main.cpp \
        command_handler/Invite.cpp \
        command_handler/Privmsg.cpp \
        command_handler/Quit.cpp \
+       command_handler/Who.cpp \
        command_handler/Whois.cpp \
        Channel.cpp
 
