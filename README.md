@@ -67,5 +67,5 @@ irssi
 
 ## Contributors
 
-[kroyo-di](https://profile.intra.42.fr/users/kroyo-di)
-[alejhern](https://profile.intra.42.fr/users/alejhern)
+* [alejhern](https://profile.intra.42.fr/users/alejhern)
+* [kroyo-di](https://profile.intra.42.fr/users/kroyo-di)
